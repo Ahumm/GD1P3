@@ -40,10 +40,13 @@ class Enemy1(object):
         self.actor.setScale(0.2)
         
     def setupAI(self, target):
+        """ Start the enemy's AI """
         self.target = target
-        self.AIchar = AICharacter("seeker",self.actor,100,0.05,1)
+        self.AIchar = AICharacter("enemy",self.actor,100,0.05,1)
         self.AIbehaviors = self.AIchar.getAiBehaviors()
-        self.AIbehaviors.seek(self.target)
+        self.AIbehaviors.seek(self.target,0.5)
+        #self.AIbehaviors.flee(self.target,1,2,0.4)
+        self.AIbehaviors.wander(0.5,0,0.5,0.2)
         return self.AIchar
         
     def setBehavior(self):

@@ -48,7 +48,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         
         self.newEnemy = enemies.Enemy1(self.player)
         self.enemies.append(self.newEnemy)
-        self.AIworld.addAiChar(self.newEnemy.setupAI(Vec3(5,5,5)))
+        self.AIworld.addAiChar(self.newEnemy.setupAI(Vec3(5,5,0)))
         
         
     def setKey(self, key, value):
