@@ -5,20 +5,46 @@ from direct.showbase.DirectObject import DirectObject #for event handling
 from direct.actor.Actor import Actor #for animated models
 from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
+from panda3d.ai import * # AI logic
 
 #Class for each enemy, lot of (planned) variance, seemed easier than subclassing, feel free to change
 class Enemy1(object):
-    def __init__(self):
+    def __init__(self,startPos):
         self.health = 20
         self.value = 10
+        
+        # Load the enemy model and set the initial position of it
+        self.loadModel()
+        self.actor.setPos((0,0,0))
     
     def take_damage(self, damage):
+        """
+            Cause an enemy to take damage.
+            Negative health means object is immortal (negative damage kills anything instantly)
+        """
+        if damage < 0:
+            self.health = 0
+            return self.value
         if self.health > 0:
             self.health -= damage
             if self.health <= 0:
                 self.health = 0
                 return self.value
         return 0
+        
+    def loadModel(self):
+        self.actor = Actor("models/ralph",
+                                {"run":"models/ralph-run",
+                                 "walk":"models/ralph-walk"})
+        self.actor.reparentTo(render)
+        self.actor.setScale(0.2)
+        
+    def setupAI(self, target):
+        self.target = target
+        self.AIchar = AICharacter("seeker",self.actor,100,0.05,5)
+        self.AIbehaviors = self.AIchar.getAiBehaviors()
+        self.AIbehaviors.seek(self.target)
+        return self.AIchar
         
     def setBehavior(self):
         pass
@@ -27,37 +53,13 @@ class Enemy2(object):
     def __init__(self):
         self.health = 20
         self.value = 10
-    
-    def take_damage(self, damage):
-        if self.health > 0:
-            self.health -= damage
-            if self.health <= 0:
-                self.health = 0
-                return self.value
-        return 0
         
 class Enemy3(object):
     def __init__(self):
         self.health = 20
         self.value = 10
-    
-    def take_damage(self, damage):
-        if self.health > 0:
-            self.health -= damage
-            if self.health <= 0:
-                self.health = 0
-                return self.value
-        return 0
         
 class Enemy4(object):
     def __init__(self):
         self.health = 20
         self.value = 10
-    
-    def take_damage(self, damage):
-        if self.health > 0:
-            self.health -= damage
-            if self.health <= 0:
-                self.health = 0
-                return self.value
-        return 0
