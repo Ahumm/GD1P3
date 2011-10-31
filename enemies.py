@@ -10,15 +10,54 @@ from direct.task import Task #for update functions
 class Enemy1(object):
     def __init__(self):
         self.health = 20
+        self.value = 10
+    
+    def take_damage(self, damage):
+        if self.health > 0:
+            self.health -= damage
+            if self.health <= 0:
+                self.health = 0
+                return self.value
+        return 0
+        
+    def setBehavior(self):
+        pass
         
 class Enemy2(object):
     def __init__(self):
         self.health = 20
+        self.value = 10
+    
+    def take_damage(self, damage):
+        if self.health > 0:
+            self.health -= damage
+            if self.health <= 0:
+                self.health = 0
+                return self.value
+        return 0
         
 class Enemy3(object):
     def __init__(self):
         self.health = 20
+        self.value = 10
+    
+    def take_damage(self, damage):
+        if self.health > 0:
+            self.health -= damage
+            if self.health <= 0:
+                self.health = 0
+                return self.value
+        return 0
         
 class Enemy4(object):
     def __init__(self):
         self.health = 20
+        self.value = 10
+    
+    def take_damage(self, damage):
+        if self.health > 0:
+            self.health -= damage
+            if self.health <= 0:
+                self.health = 0
+                return self.value
+        return 0

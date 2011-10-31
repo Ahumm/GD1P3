@@ -5,6 +5,7 @@ from direct.actor.Actor import Actor #for animated models
 from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
 from direct.gui.DirectGui import * #for buttons and stuff
+from panda3d.ai import * # AI logic
 import sys, math, random
 
 import player
@@ -43,6 +44,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.player = player.Player()
         
         self.paused = False
+        self.setAI()
         
     def setKey(self, key, value):
         self.keyMap[key] = value
@@ -80,7 +82,33 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.paused = True
         self.resume_button = DirectButton(text = ("Resume"), scale = 0.25, command = self.resume_game, pos=(0, 0, 0.4))
         self.exit_button = DirectButton(text = ("Exit"), scale = 0.25, command = self.exit_game, pos=(0, 0, 0))
+    
+    def setAI(self):
+        """ Set up The AI world"""
+        # Create the world
+        self.AIworld = AIWorld(render)
         
+        # Example from the Panda3D manual:
+            # Make the AI character
+            #self.AIchar = AICharacter("seeker",self.seeker, 100, 0.05, 5)
+            # Add the character to the world
+            #self.AIworld.addAiChar(self.AIchar)
+            # Get the possible AI behaviors
+            #self.AIbehaviors = self.AIchar.getAiBehaviors()
+            # Set the character's behavior
+            #self.AIbehaviors.seek(self.target)
+            # Run it
+            #self.seeker.loop("run")
+        
+        # Add the AIworld updater
+        taskMgr.add(self.AIUpdate, "AIUpdate")
+        
+    def AIUpdate(self,task):
+        """ Update the AIWorld """
+        self.AIworld.update()
+        return Task.cont
+
+    
     def resume_game(self):
         self.remove_pause_menu()
         self.paused = False
