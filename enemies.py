@@ -41,7 +41,7 @@ class Enemy1(object):
         
     def setupAI(self, target):
         self.target = target
-        self.AIchar = AICharacter("seeker",self.actor,100,0.05,5)
+        self.AIchar = AICharacter("seeker",self.actor,100,0.05,1)
         self.AIbehaviors = self.AIchar.getAiBehaviors()
         self.AIbehaviors.seek(self.target)
         return self.AIchar
