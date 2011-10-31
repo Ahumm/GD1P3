@@ -5,12 +5,9 @@
 import direct.directbase.DirectStart #starts Panda
 from pandac.PandaModules import * #basic Panda modules
 from direct.showbase.DirectObject import DirectObject #for event handling
-from direct.actor.Actor import Actor #for animated models
-from direct.interval.IntervalGlobal import * #for compound intervals
-from direct.task import Task #for update functions
 from direct.gui.DirectGui import * #for buttons and stuff
 import sys
-# Game specific imports go here...
+#Import our game stuff
 import game
 
 
