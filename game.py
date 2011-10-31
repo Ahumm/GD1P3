@@ -4,6 +4,7 @@ from direct.showbase.DirectObject import DirectObject #for event handling
 from direct.actor.Actor import Actor #for animated models
 from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
+from direct.gui.DirectGui import * #for buttons and stuff
 import sys, math, random
 
 import player
@@ -23,7 +24,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         
         # Mapping some keys
         self.keyMap = {"left":0, "right":0, "forward":0, "back":0}
-        self.accept("escape", pause)
+        self.accept("escape", self.pause)
         self.accept("w", self.setKey, ["forward", 1])
         self.accept("d", self.setKey, ["right", 1])
         self.accept("a", self.setKey, ["left", 1])
@@ -34,14 +35,14 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.accept("s-up", self.setKey, ["back", 0])
 
         # Empty lists to track stuff
-        enemies = []
-        bullets = []
-        mortars = []
+        self.enemies = []
+        self.bullets = []
+        self.mortars = []
         
         # Make a player object
-        Player = player.Player()
+        self.player = player.Player()
         
-        paused = False
+        self.paused = False
         
     def setKey(self, key, value):
         self.keyMap[key] = value
@@ -76,5 +77,22 @@ class World(DirectObject): #subclassing here is necessary to accept events
         
         
     def pause(self):
+        self.paused = True
+        self.resume_button = DirectButton(text = ("Resume"), scale = 0.25, command = self.resume_game, pos=(0, 0, 0.4))
+        self.exit_button = DirectButton(text = ("Exit"), scale = 0.25, command = self.exit_game, pos=(0, 0, 0))
         
+    def resume_game(self):
+        self.remove_pause_menu()
+        self.paused = False
+        
+    def exit_game(self):
+        self.remove_pause_menu()
+        sys.exit()
+        
+        
+    def remove_pause_menu(self):
+        if self.resume_button:
+            self.resume_button.removeNode()
+        if self.exit_button:
+            self.exit_button.removeNode()
             
