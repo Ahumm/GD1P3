@@ -50,7 +50,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         
         self.newEnemy = enemies.Enemy1(self.player)
         self.enemies.append(self.newEnemy)
-        self.AIworld.addAiChar(self.newEnemy.setupAI(Vec3(5,5,0)))
+        self.AIworld.addAiChar(self.newEnemy.setupAI(self.player.actor))
         
         
     def setKey(self, key, value):
@@ -112,6 +112,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         
     def AIUpdate(self,task):
         """ Update the AIWorld """
+        #print self.enemies[0].distanceToTarget()
         self.AIworld.update()
         return Task.cont
     
