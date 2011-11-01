@@ -17,7 +17,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         # Marc's stuff
         #turn off mouse control, otherwise camera is not repositionable
         base.disableMouse()
-        camera.setPosHpr(0, -15, 7, 0, -15, 0)
+        #camera.setPosHpr(0, -15, 7, 0, -15, 0)
         self.loadModels()
         self.setupLights()
         self.setupCollisions()
@@ -40,8 +40,10 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.bullets = []
         self.mortars = []
         
+        # Find the start position
+        self.player_start = (0,0,0)
         # Make a player object
-        self.player = player.Player()
+        self.player = player.Player(self)
         
         self.paused = False
         self.setAI()
