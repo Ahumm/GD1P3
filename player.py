@@ -37,7 +37,12 @@ class Player(DirectObject):
         camera.setPosHpr(self.actor.getX()+20,self.actor.getY()+10,4,0,0,0)
         #camera.lookAt(self.actor)
         
+        # Set Default Weapon
         self.selected_weapon = "SMG"
+        
+        # Add headlights
+        self.left_headlight = self.actor.attachNewNode(Spotlight("left"))
+        self.left_headlight.node().setColor( Vec4( .35, .35, .35, 1 ) )
         
         # Add Movement Task
         taskMgr.add(self.move, "PlayerMove", extraArgs= [game])
@@ -50,11 +55,11 @@ class Player(DirectObject):
         if self.health <= 0:
             self.die()
             
-    def select_weapon(self, weapon):
+    def set_weapon(self, weapon):
         self.selected_weapon = weapon
+        print "Weapon is now " + weapon
     
     def move(self, game):
-        MOVE = False
         if not game.paused:
             self.player_start_pos = self.actor.getPos()
             if game.keyMap["left"]:
@@ -79,8 +84,6 @@ class Player(DirectObject):
             if (len(entries)>0) and (entries[0].getIntoNode().getName() == "terrain"):
                 self.actor.setZ(entries[0].getSurfacePoint(render).getZ()+4)
             else:
-                if MOVE:
-                    print "Cant move"
                 self.actor.setPos(self.player_start_pos)
                 
             # Basic Camera Repositioning, need to tweak.
