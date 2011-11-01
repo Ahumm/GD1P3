@@ -6,6 +6,7 @@ from direct.actor.Actor import Actor #for animated models
 from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
 from panda3d.ai import * # AI logic
+import math
 
 #Class for each enemy, lot of (planned) variance, seemed easier than subclassing, feel free to change
 class Enemy1(object):
@@ -44,13 +45,15 @@ class Enemy1(object):
         self.target = target
         self.AIchar = AICharacter("enemy",self.actor,100,0.05,1)
         self.AIbehaviors = self.AIchar.getAiBehaviors()
-        self.AIbehaviors.seek(self.target,0.5)
-        #self.AIbehaviors.flee(self.target,1,2,0.4)
-        self.AIbehaviors.wander(0.5,0,0.5,0.2)
+        #self.AIbehaviors.seek(self.target,0.5)
+        self.AIbehaviors.evade(self.target,0.1,10,0.4)
+        self.AIbehaviors.pursue(self.target, 0.5)
+        self.actor.loop("run")
+        self.AIbehaviors.wander(5,0,3,0.5)
         return self.AIchar
         
-    def setBehavior(self):
-        pass
+    def distanceToTarget(self):
+        return math.sqrt((self.actor.getX() - self.target.getX())**2 + (self.actor.getY() - self.target.getY())**2 + (self.actor.getZ() - self.target.getZ()))
         
 class Enemy2(object):
     def __init__(self):
