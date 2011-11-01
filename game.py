@@ -112,7 +112,6 @@ class World(DirectObject): #subclassing here is necessary to accept events
         """ Update the AIWorld """
         self.AIworld.update()
         return Task.cont
-
     
     def resume_game(self):
         self.remove_pause_menu()
