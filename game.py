@@ -26,6 +26,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         # Mapping some keys
         self.keyMap = {"left":0, "right":0, "forward":0, "back":0}
         self.accept("escape", self.pause)
+        self.accept("l", self.toggle_light)
         self.accept("1", self.setSMG)
         self.accept("2", self.setShotgun)
         self.accept("3", self.setMortar)
@@ -52,6 +53,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         #Load Environment
         self.environ = loader.loadModel("models/ground")      
         self.environ.reparentTo(render)
+        self.environ.setScale(0.2)
         self.environ.setPos(0,0,0)
         
         # Setup the collision detection rays
@@ -109,6 +111,9 @@ class World(DirectObject): #subclassing here is necessary to accept events
     def loadModels(self):
         """loads models into the world"""
         pass
+        
+    def toggle_light(self):
+        self.player.toggle_light()
         
     def setupLights(self):
         #ambient light
