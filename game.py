@@ -26,6 +26,9 @@ class World(DirectObject): #subclassing here is necessary to accept events
         # Mapping some keys
         self.keyMap = {"left":0, "right":0, "forward":0, "back":0}
         self.accept("escape", self.pause)
+        self.accept("1", self.setSMG)
+        self.accept("2", self.setShotgun)
+        self.accept("3", self.setMortar)
         self.accept("w", self.setKey, ["forward", 1])
         self.accept("d", self.setKey, ["right", 1])
         self.accept("a", self.setKey, ["left", 1])
@@ -41,9 +44,47 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.mortars = []
         
         # Find the start position
-        self.player_start = (0,0,0)
+        self.player_start = (0,0,10)
         # Make a player object
         self.player = player.Player(self)
+        
+        
+        #Load Environment
+        self.environ = loader.loadModel("models/ground")      
+        self.environ.reparentTo(render)
+        self.environ.setPos(0,0,0)
+        
+        # Setup the collision detection rays
+        self.cTrav = CollisionTraverser()
+        
+        
+        # Player Rays
+        self.player_cgray = CollisionRay()
+        self.player_cgray.setOrigin(0,0,100)
+        self.player_cgray.setDirection(0,0,-1)
+        self.player_cgcol = CollisionNode("player_gray")
+        self.player_cgcol.addSolid(self.player_cgray)
+        self.player_cgcol.setFromCollideMask(BitMask32.bit(0))
+        self.player_cgcol.setIntoCollideMask(BitMask32.allOff())
+        self.player_cgcolnp = self.player.actor.attachNewNode(self.player_cgcol)
+        self.player_cghandler = CollisionHandlerQueue()
+        self.cTrav.addCollider(self.player_cgcolnp, self.player_cghandler)
+        
+        # Ground Rays
+        self.cgray=CollisionRay()
+        self.cgray.setOrigin(0,0,100)
+        self.cgray.setDirection(0,0,-1)
+        self.cgcol = CollisionNode("cgray")
+        self.cgcol.addSolid(self.cgray)
+        self.cgcol.setFromCollideMask(BitMask32.bit(0))
+        self.cgcol.setIntoCollideMask(BitMask32.allOff())
+        self.cgcolnp = camera.attachNewNode(self.cgcol)
+        self.cghandler = CollisionHandlerQueue()
+        self.cTrav.addCollider(self.cgcolnp, self.cghandler)
+        
+        #self.player_cgcolnp.show()
+       # self.cgcolnp.show()
+        #self.cTrav.showCollisions(render)
         
         self.paused = False
         self.setAI()
@@ -55,6 +96,15 @@ class World(DirectObject): #subclassing here is necessary to accept events
         
     def setKey(self, key, value):
         self.keyMap[key] = value
+        
+    def setSMG(self):
+        self.player.set_weapon("SMG")
+    
+    def setShotgun(self):
+        self.player.set_weapon("Shotgun")
+        
+    def setMortar(self):
+        self.player.set_weapon("Mortar")
         
     def loadModels(self):
         """loads models into the world"""

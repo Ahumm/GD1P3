@@ -3,11 +3,10 @@
 <Comment> {
   "maya2egg2012 -a model -o ground.egg temp_terrain.mb"
 }
-<Group> temp_terrain {
-  <Dart> { 1 }
-  <Group> groundPlane_transform {
-  }
-  <Group> pPlane1 {
+
+	
+  <Group> terrain {
+	<Collide> { Polyset keep descend }
     <VertexPool> pPlaneShape1.verts {
       <Vertex> 0 {
         -281.98 -0.0893599 305.16
@@ -3816,26 +3815,4 @@
       <VertexRef> { 433 393 398 438 <Ref> { pPlaneShape1.verts } }
     }
   }
-  <Group> softMod1Handle {
-  }
-  <Group> softMod2Handle {
-  }
-  <Group> softMod3Handle {
-  }
-  <Group> softMod4Handle {
-  }
-  <Group> softMod5Handle {
-  }
-  <Group> softMod6Handle {
-  }
-  <Group> softMod7Handle {
-  }
-  <Group> softMod8Handle {
-  }
-  <Group> softMod9Handle {
-  }
-  <Group> softMod10Handle {
-  }
-  <Group> softMod11Handle {
-  }
-}
+
