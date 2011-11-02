@@ -85,13 +85,13 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.cTrav.addCollider(self.cgcolnp, self.cghandler)
         
         #self.player_cgcolnp.show()
-       # self.cgcolnp.show()
+        #self.cgcolnp.show()
         #self.cTrav.showCollisions(render)
         
         self.paused = False
         self.setAI()
         
-        self.newEnemy = enemies.Enemy1(self.player,self)
+        self.newEnemy = enemies.Enemy1(self)
         self.enemies.append(self.newEnemy)
         self.AIworld.addAiChar(self.newEnemy.setupAI(self.player.actor))
         
