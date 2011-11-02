@@ -71,24 +71,7 @@ class Player(DirectObject):
                 self.actor.setX(self.actor,  25 * globalClock.getDt())
             if game.keyMap["back"]:
                 self.actor.setX(self.actor, - 25 * globalClock.getDt())
-            
-            # Check for terrain collisions
-            game.cTrav.traverse(render)
-            
-            # Now update the player's Z coordinate, or don't move at all
-            entries = []
-            for i in range(game.player_cghandler.getNumEntries()):
-                entry = game.player_cghandler.getEntry(i)
-                entries.append(entry)
-            entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
-            if (len(entries)>0) and (entries[0].getIntoNode().getName() == "terrain"):
-                self.actor.setZ(entries[0].getSurfacePoint(render).getZ()+4)
-            else:
-                self.actor.setPos(self.player_start_pos)
                 
-            # Basic Camera Repositioning, need to tweak.
-            camera.setPosHpr(self.actor.getX(),self.actor.getY()+10,self.actor.getZ()+3,self.actor.getH(),0,0)
-            camera.lookAt(self.actor)
         return Task.cont
     
     def rotate(self, game):

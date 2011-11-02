@@ -62,7 +62,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         
         # Player Rays
         self.player_cgray = CollisionRay()
-        self.player_cgray.setOrigin(0,0,1000)
+        self.player_cgray.setOrigin(0,0,80)
         self.player_cgray.setDirection(0,0,-1)
         self.player_cgcol = CollisionNode("player_gray")
         self.player_cgcol.addSolid(self.player_cgray)
@@ -84,8 +84,8 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.cghandler = CollisionHandlerQueue()
         self.cTrav.addCollider(self.cgcolnp, self.cghandler)
         
-        #self.player_cgcolnp.show()
-        #self.cgcolnp.show()
+        self.player_cgcolnp.show()
+        self.cgcolnp.show()
         self.cTrav.showCollisions(render)
         
         self.paused = False

@@ -20,10 +20,6 @@ class Enemy1(object):
         self.enemy_start_pos = game.player_start
         
         # Enemy Rays
-        #self.enemy_cray = self.actor.attachNewNode(CollisionNode('colNode'))
-        #self.enemy_cray.node().addSolid(CollisionRay(0,0,0,0,0,-1))
-        #self.lifter = CollisionHandlerFloor()
-        #self.lifter.addCollider(self.enemy_cray,self.actor)
         self.ralphGroundRay = CollisionRay()
         self.ralphGroundRay.setOrigin(0,0,100)
         self.ralphGroundRay.setDirection(0,0,-1)
@@ -62,41 +58,25 @@ class Enemy1(object):
         
     def distanceToTarget(self):
         return math.sqrt((self.actor.getX() - self.target.getX())**2 + (self.actor.getY() - self.target.getY())**2 + (self.actor.getZ() - self.target.getZ()))
-        
-    def move(self,game):
-        targetPos = game.player.actor.getPos()
-        myPos = self.actor.getPos()
-        
-        
-        
-        # Update the enemy's Z-coord
-        startpos = self.actor.getPos()
-        entries = []
-        for i in range(self.ralphGroundHandler.getNumEntries()):
-            entry = self.ralphGroundHandler.getEntry(i)
-            entries.append(entry)
-        entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(),
-                                     x.getSurfacePoint(render).getZ()))
-        if (len(entries)>0) and (entries[0].getIntoNode().getName() == "terrain"):
-            self.actor.setZ(entries[0].getSurfacePoint(render).getZ())
-        else:
-            self.actor.setPos(startpos)
-        self.actor.setHpr(self.actor.getH(),0,0)
-        return Task.cont
-        
+     
     def setupAI(self, target):
         """ Start the enemy's AI """
         self.target = target
         self.AIchar = AICharacter("enemy",self.actor,100,0.05,5)
         self.AIbehaviors = self.AIchar.getAiBehaviors()
         #self.AIbehaviors.seek(self.target,0.5)
-        self.AIbehaviors.evade(self.target,0.1,10,0.4)
+        self.AIbehaviors.evade(self.target,0.5,10,0.4)
         self.AIbehaviors.pursue(self.target, 0.5)
         self.actor.loop("run")
         self.AIbehaviors.wander(5,0,3,0.5)
         return self.AIchar
         
     def updateHeight(self,game):
+        #print self.distanceToTarget()
+        #print self.target.getX()
+        #print self.actor.getX()
+        #self.move(game)
+        #return
         # Now update the player's Z coordinate, or don't move at all
         startpos = self.actor.getPos()
         entries = []
