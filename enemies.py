@@ -20,19 +20,23 @@ class Enemy1(object):
         self.enemy_start_pos = game.player_start
         
         # Enemy Rays
-        self.player_cgray = CollisionRay()
-        self.player_cgray.setOrigin(0,0,100)
-        self.player_cgray.setDirection(0,0,-1)
-        self.player_cgcol = CollisionNode("enemy_gray")
-        self.player_cgcol.addSolid(self.player_cgray)
-        self.player_cgcol.setFromCollideMask(BitMask32.bit(0))
-        self.player_cgcol.setIntoCollideMask(BitMask32.allOff())
-        self.player_cgcolnp = self.actor.attachNewNode(self.player_cgcol)
-        self.player_cghandler = CollisionHandlerQueue()
-        game.cTrav.addCollider(self.player_cgcolnp, self.player_cghandler)
-        self.player_cgcolnp.show()
+        #self.enemy_cray = self.actor.attachNewNode(CollisionNode('colNode'))
+        #self.enemy_cray.node().addSolid(CollisionRay(0,0,0,0,0,-1))
+        #self.lifter = CollisionHandlerFloor()
+        #self.lifter.addCollider(self.enemy_cray,self.actor)
+        self.ralphGroundRay = CollisionRay()
+        self.ralphGroundRay.setOrigin(0,0,100)
+        self.ralphGroundRay.setDirection(0,0,-1)
+        self.ralphGroundCol = CollisionNode('ralphRay')
+        self.ralphGroundCol.addSolid(self.ralphGroundRay)
+        self.ralphGroundCol.setFromCollideMask(BitMask32.bit(0))
+        self.ralphGroundCol.setIntoCollideMask(BitMask32.allOff())
+        self.ralphGroundColNp = self.actor.attachNewNode(self.ralphGroundCol)
+        self.ralphGroundHandler = CollisionHandlerQueue()
+        game.cTrav.addCollider(self.ralphGroundColNp, self.ralphGroundHandler)
+        self.ralphGroundColNp.show()
         
-        self.heightTask = taskMgr.add(self.updateHeight,'EnemyHeight',extraArgs=[game])
+        #self.heightTask = taskMgr.add(self.updateHeight,'EnemyHeight',extraArgs=[game])
     
     def take_damage(self, damage):
         """
@@ -56,10 +60,34 @@ class Enemy1(object):
         self.actor.reparentTo(render)
         self.actor.setScale(0.2)
         
+    def distanceToTarget(self):
+        return math.sqrt((self.actor.getX() - self.target.getX())**2 + (self.actor.getY() - self.target.getY())**2 + (self.actor.getZ() - self.target.getZ()))
+        
+    def move(self,game):
+        targetPos = game.player.actor.getPos()
+        myPos = self.actor.getPos()
+        
+        
+        
+        # Update the enemy's Z-coord
+        startpos = self.actor.getPos()
+        entries = []
+        for i in range(self.ralphGroundHandler.getNumEntries()):
+            entry = self.ralphGroundHandler.getEntry(i)
+            entries.append(entry)
+        entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(),
+                                     x.getSurfacePoint(render).getZ()))
+        if (len(entries)>0) and (entries[0].getIntoNode().getName() == "terrain"):
+            self.actor.setZ(entries[0].getSurfacePoint(render).getZ())
+        else:
+            self.actor.setPos(startpos)
+        self.actor.setHpr(self.actor.getH(),0,0)
+        return Task.cont
+        
     def setupAI(self, target):
         """ Start the enemy's AI """
         self.target = target
-        self.AIchar = AICharacter("enemy",self.actor,100,0.05,1)
+        self.AIchar = AICharacter("enemy",self.actor,100,0.05,5)
         self.AIbehaviors = self.AIchar.getAiBehaviors()
         #self.AIbehaviors.seek(self.target,0.5)
         self.AIbehaviors.evade(self.target,0.1,10,0.4)
@@ -68,20 +96,20 @@ class Enemy1(object):
         self.AIbehaviors.wander(5,0,3,0.5)
         return self.AIchar
         
-    def distanceToTarget(self):
-        return math.sqrt((self.actor.getX() - self.target.getX())**2 + (self.actor.getY() - self.target.getY())**2 + (self.actor.getZ() - self.target.getZ()))
-        
     def updateHeight(self,game):
         # Now update the player's Z coordinate, or don't move at all
+        startpos = self.actor.getPos()
         entries = []
-        for i in range(self.player_cghandler.getNumEntries()):
-            entry = self.player_cghandler.getEntry(i)
+        for i in range(self.ralphGroundHandler.getNumEntries()):
+            entry = self.ralphGroundHandler.getEntry(i)
             entries.append(entry)
-        entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
+        entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(),
+                                     x.getSurfacePoint(render).getZ()))
         if (len(entries)>0) and (entries[0].getIntoNode().getName() == "terrain"):
-            self.actor.setZ(entries[0].getSurfacePoint(render).getZ()+4)
+            self.actor.setZ(entries[0].getSurfacePoint(render).getZ())
         else:
-            self.actor.setPos(self.enemy_start_pos)
+            self.actor.setPos(startpos)
+        self.actor.setHpr(self.actor.getH(),0,0)
         return Task.cont
     
     def die(self):

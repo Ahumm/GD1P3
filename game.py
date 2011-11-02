@@ -62,7 +62,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         
         # Player Rays
         self.player_cgray = CollisionRay()
-        self.player_cgray.setOrigin(0,0,100)
+        self.player_cgray.setOrigin(0,0,1000)
         self.player_cgray.setDirection(0,0,-1)
         self.player_cgcol = CollisionNode("player_gray")
         self.player_cgcol.addSolid(self.player_cgray)
@@ -86,7 +86,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         
         #self.player_cgcolnp.show()
         #self.cgcolnp.show()
-        #self.cTrav.showCollisions(render)
+        self.cTrav.showCollisions(render)
         
         self.paused = False
         self.setAI()
@@ -169,6 +169,8 @@ class World(DirectObject): #subclassing here is necessary to accept events
         """ Update the AIWorld """
         #print self.enemies[0].distanceToTarget()
         self.AIworld.update()
+        for e in self.enemies:
+            e.updateHeight(self)
         return Task.cont
     
     def resume_game(self):
