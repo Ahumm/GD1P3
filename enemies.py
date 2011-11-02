@@ -32,6 +32,9 @@ class Enemy1(object):
         game.cTrav.addCollider(self.ralphGroundColNp, self.ralphGroundHandler)
         self.ralphGroundColNp.show()
         
+        self.pursue_start = False
+        self.evade_start = False
+        
         #self.heightTask = taskMgr.add(self.updateHeight,'EnemyHeight',extraArgs=[game])
     
     def take_damage(self, damage):
@@ -57,28 +60,44 @@ class Enemy1(object):
         self.actor.setScale(0.2)
         
     def distanceToTarget(self):
-        return math.sqrt((self.actor.getX() - self.target.getX())**2 + (self.actor.getY() - self.target.getY())**2 + (self.actor.getZ() - self.target.getZ()))
+        return math.sqrt((self.actor.getX() - self.target.getX())**2 + (self.actor.getY() - self.target.getY())**2 )#+ (self.actor.getZ() - self.target.getZ()))
      
     def setupAI(self, target):
         """ Start the enemy's AI """
         self.target = target
         self.AIchar = AICharacter("enemy",self.actor,100,0.05,5)
         self.AIbehaviors = self.AIchar.getAiBehaviors()
-        #self.AIbehaviors.seek(self.target,0.5)
-        self.AIbehaviors.evade(self.target,0.5,10,0.4)
-        self.AIbehaviors.pursue(self.target, 0.5)
+        self.AIbehaviors.evade(self.target,2,10,1.0)
+        self.AIbehaviors.pursue(self.target,1.0)
+        self.AIbehaviors.wander(4,3,100,0.5)
+        self.pause_e()
+        self.resume_e()
         self.actor.loop("run")
-        self.AIbehaviors.wander(5,0,3,0.5)
         return self.AIchar
         
+    def updateAI(self,game):
+        self.pause_e()
+        if self.distanceToTarget() > 40 or self.pursue_start:
+            self.pursue_start = True
+            self.evade_start = False
+            self.AIbehaviors.pursue(game.player.actor,1.0)
+        else:
+            self.pursue_start = False
+            self.evade_start = True
+            self.AIbehaviors.flee(game.player.actor,30,10,0.5)
+            
+        if self.distanceToTarget() < 2:
+            self.pursue_start = False
+        if self.distanceToTarget() > 10:
+            self.evade_start = False
+            
+        self.resume_e()
+            
+        #print "%s ::: %s ::: %s" % (self.AIbehaviors.behaviorStatus("pursue"),self.AIbehaviors.behaviorStatus("flee"),self.AIbehaviors.behaviorStatus("wander"))
+    
     def updateHeight(self,game):
-        #print self.distanceToTarget()
-        #print self.target.getX()
-        #print self.actor.getX()
-        #self.move(game)
-        #return
-        # Now update the player's Z coordinate, or don't move at all
         startpos = self.actor.getPos()
+        self.updateAI(game)
         entries = []
         for i in range(self.ralphGroundHandler.getNumEntries()):
             entry = self.ralphGroundHandler.getEntry(i)
@@ -91,6 +110,21 @@ class Enemy1(object):
             self.actor.setPos(startpos)
         self.actor.setHpr(self.actor.getH(),0,0)
         return Task.cont
+    
+    #AI Controls
+    def pause_e(self):
+        self.AIbehaviors.pauseAi("pursue")
+        self.AIbehaviors.pauseAi("evade")
+        self.AIbehaviors.pauseAi("flee")
+        self.AIbehaviors.pauseAi("wander")
+        
+    def resume_e(self):
+        self.AIbehaviors.resumeAi("wander")
+    
+    def fire(self):
+        if self.pursue_start:
+            print "PEWPEW!"
+            pass
     
     def die(self):
         taskMgr.remove(self.heightTask)

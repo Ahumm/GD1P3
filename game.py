@@ -91,9 +91,10 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.paused = False
         self.setAI()
         
-        self.newEnemy = enemies.Enemy1(self)
-        self.enemies.append(self.newEnemy)
-        self.AIworld.addAiChar(self.newEnemy.setupAI(self.player.actor))
+        for i in range(5):
+            self.newEnemy = enemies.Enemy1(self)
+            self.enemies.append(self.newEnemy)
+            self.AIworld.addAiChar(self.newEnemy.setupAI(self.player.actor))
         
         
     def setKey(self, key, value):
