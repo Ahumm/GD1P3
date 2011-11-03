@@ -5,6 +5,8 @@ from direct.actor.Actor import Actor #for animated models
 from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
 
+import bullets
+
 class Player(DirectObject):
     def __init__(self, game):
         # Set ALL the variables!
@@ -13,21 +15,23 @@ class Player(DirectObject):
         self.shotgun_ammo = 32
         self.shotgun_mag = 8
         self.shotgun_can_fire = True
-        self.shotgun_fire_rate = 10
+        self.shotgun_fire_rate = 20
         self.shotgun_fire_counter = 0
         self.shotgun_reloading = False
-        self.shotgun_reload_time = 20
+        self.shotgun_reload_time = 180
         self.shotgun_reload_counter = 0
         self.mortars = 12
         self.mortar_loaded = True
-        self.mortar_load_time = 40
+        self.mortar_load_time = 240
         self.mortar_load_counter = 0
         self.smg_mag = 30
-        self.smg_reload_time = 10
+        self.smg_reload_time = 120
         self.smg_reload_counter = 0
         self.smg_burst_count = 3
-        self.smg_fire_rate = 5
+        self.smg_fire_rate = 30
         self.smg_fire_counter = 0
+        self.smg_reloading = False
+        self.smg_can_fire = True
         self.rotate_counter = 0
         self.rotate_timer = 10
         self.actor = Actor("models/player")
@@ -67,6 +71,10 @@ class Player(DirectObject):
         # Add Rotate Task
         taskMgr.add(self.rotate, "PlayerRotate", extraArgs=[game])
         
+        
+        # Add Logic Update Task
+        taskMgr.add(self.update_counters, "PlayerUpdate", extraArgs=[game])
+        
     def take_damage(self, damage):
         self.health -= damage
         if self.health <= 0:
@@ -78,8 +86,75 @@ class Player(DirectObject):
         
         
     def shoot(self, game):
-        print "Bang Bang"
+        if not game.paused:
+            if self.selected_weapon == "SMG":
+                if self.smg_can_fire:
+                    if self.smg_mag >= self.smg_burst_count:
+                        self.smg_mag -= self.smg_burst_count
+                        self.smg_fire_counter += self.smg_fire_rate
+                        self.smg_can_fire = False
+                        print "SMG fired 3 rounds, "+str(self.smg_mag)+" rounds remaining"
+                    if self.smg_mag == 0:
+                        self.smg_reload_counter +=self.smg_reload_time
+                        self.smg_reloading = True
+                        print "SMG reloading"
+            elif self.selected_weapon == "Shotgun":
+                if self.shotgun_can_fire:
+                    if self.shotgun_mag > 0:
+                        self.shotgun_mag -= 1
+                        self.shotgun_fire_counter += self.shotgun_fire_rate
+                        self.shotgun_can_fire = False
+                        print "Shotgun fired, " + str(self.shotgun_mag)+" rounds remaining"
+                    if self.shotgun_mag == 0:
+                        self.shotgun_reload_counter += self.shotgun_reload_time
+                        self.shotgun_reloading = True
+                        print "Shotgun reloading"
+            elif self.selected_weapon == "Mortar":
+                if self.mortar_loaded:
+                    self.mortar_loaded = False
+                    self.mortar_load_counter += self.mortar_load_time
+                    self.mortars -= 1
+                    print "Mortar launched"
     
+    def update_counters(self, game):
+        if not game.paused:
+            if self.selected_weapon == "SMG":
+                if not self.smg_can_fire:
+                    if self.smg_fire_counter > 0:
+                        self.smg_fire_counter -= 1
+                    if self.smg_fire_counter == 0:
+                        self.smg_can_fire = True
+                if self.smg_reloading:
+                    if self.smg_reload_counter > 0:
+                        self.smg_reload_counter -= 1
+                    if self.smg_reload_counter == 0:
+                        self.smg_mag = 30
+                        self.smg_reloading = False
+                        print "SMG reloaded"
+        
+            elif self.selected_weapon =="Shotgun":
+                if not self.shotgun_can_fire:
+                    if self.shotgun_fire_counter > 0:
+                        self.shotgun_fire_counter -=1
+                    if self.shotgun_fire_counter == 0:
+                        self.shotgun_can_fire = True
+                if self.shotgun_reloading:
+                    if self.shotgun_reload_counter > 0:
+                        self.shotgun_reload_counter -= 1
+                    if self.shotgun_reload_counter == 0:
+                        self.shotgun_mag = 8
+                        self.shotgun_reloading = False
+                        print "Shotgun reloaded"
+                        
+            elif self.selected_weapon == "Mortar":
+                if not self.mortar_loaded:
+                    if self.mortar_load_counter > 0:
+                        self.mortar_load_counter -= 1
+                    if self.mortar_load_counter == 0:
+                        self.mortar_loaded = True
+                        print "Mortar loaded"
+        return Task.cont
+            
     def move(self, game):
         if not game.paused:
             self.player_start_pos = self.actor.getPos()
@@ -104,7 +179,7 @@ class Player(DirectObject):
             entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
             if (len(entries)>0) and (entries[0].getIntoNode().getName() == "terrain"):
                 self.surface_normal_vector = (entries[0].getSurfaceNormal(render))
-                print str(self.surface_normal_vector)
+                #print str(self.surface_normal_vector)
                 self.actor.setZ(entries[0].getSurfacePoint(render).getZ()+2)
                 if self.actor.getZ() > self.oldz:
                     self.actor.setR(500*(0.2-self.surface_normal_vector[2]))
@@ -145,9 +220,6 @@ class Player(DirectObject):
 
         return Task.cont
         
-        
-    def update_counters(self, game):
-        pass
     
     def die(self):
         pass
