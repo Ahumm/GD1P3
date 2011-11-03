@@ -5,8 +5,6 @@ from direct.actor.Actor import Actor #for animated models
 from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
 
-import bullets
-
 class Player(DirectObject):
     def __init__(self, game):
         # Set ALL the variables!
@@ -30,25 +28,15 @@ class Player(DirectObject):
         self.smg_burst_count = 3
         self.smg_fire_rate = 5
         self.smg_fire_counter = 0
-
-        self.last_shot_fired = 0.0
-
         self.rotate_counter = 0
         self.rotate_timer = 10
-
         self.actor = Actor("models/player")
         self.actor.reparentTo(render)
         self.actor.setScale(0.2)
         self.actor.setH(-90)
         self.actor.setPos(game.player_start)
-
-        self.dt = globalClock.getDt()
-       
-        camera.setPosHpr(self.actor.getX()+20,self.actor.getY()+10,4,0,0,0)
-
         camera.reparentTo(self.actor)
         camera.setPosHpr(20,10,4,0,0,0)
-
         #camera.lookAt(self.actor)
         
         # Set Default Weapon
@@ -70,15 +58,14 @@ class Player(DirectObject):
         self.right_light_node.node().setAttenuation(Vec3(1,0.0,0.0))
         self.right_light_node.setPosHpr(0,-3,-1,-90,-10,0)
         
+        # Needed for pitch changes
+        self.oldz = self.actor.getZ()
         
         # Add Movement Task
         taskMgr.add(self.move, "PlayerMove", extraArgs= [game])
         
         # Add Rotate Task
         taskMgr.add(self.rotate, "PlayerRotate", extraArgs=[game])
-        
-        #Add Firing Task
-        #taskMgr.add(self.fire, "FireGun", extraArgs=[game])
         
     def take_damage(self, damage):
         self.health -= damage
@@ -93,30 +80,19 @@ class Player(DirectObject):
     def shoot(self, game):
         print "Bang Bang"
     
-    def fire(self):
-        if self.selected_weapon == "SMG":
-            fireRate = 100.0
-            if self.last_shot_fired > 1.0/fireRate:
-                self.last_shot_fired = 0.0
-                b = bullets.Bullet()
-                b.init("ball", self)
-        
-    
     def move(self, game):
         if not game.paused:
             self.player_start_pos = self.actor.getPos()
             if game.keyMap["left"]:
-                self.actor.setY(self.actor,  25 * self.dt)
+                self.actor.setY(self.actor,  25 * globalClock.getDt())
             if game.keyMap["right"]:
-                self.actor.setY(self.actor, - 25 * self.dt)
+                self.actor.setY(self.actor, - 25 * globalClock.getDt())
             if game.keyMap["forward"]:
                 MOVE = True
-                self.actor.setX(self.actor,  25 * self.dt)
+                self.actor.setX(self.actor,  25 * globalClock.getDt())
             if game.keyMap["back"]:
-                self.actor.setX(self.actor, - 25 * self.dt)    
-            if game.keyMap["fire"] == True:
-                self.last_shot_fired += self.dt
-                self.fire()
+                self.actor.setX(self.actor, - 25 * globalClock.getDt())
+            
             # Check for terrain collisions
             game.cTrav.traverse(render)
             
@@ -127,11 +103,16 @@ class Player(DirectObject):
                 entries.append(entry)
             entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
             if (len(entries)>0) and (entries[0].getIntoNode().getName() == "terrain"):
-                #self.vector = (entries[0].getContactNormal(self.actor))
+                self.surface_normal_vector = (entries[0].getSurfaceNormal(render))
+                print str(self.surface_normal_vector)
                 self.actor.setZ(entries[0].getSurfacePoint(render).getZ()+2)
+                if self.actor.getZ() > self.oldz:
+                    self.actor.setR(500*(0.2-self.surface_normal_vector[2]))
+                elif self.actor.getZ() < self.oldz: 
+                    self.actor.setR(-500*(0.2-self.surface_normal_vector[2]))
             else:
                 self.actor.setPos(self.player_start_pos)
-                
+            self.oldz = self.actor.getZ()
             # Basic Camera Repositioning, need to tweak.
             camera.setPosHpr(-45,0,10,0,0,0)
             camera.lookAt(self.actor)
@@ -152,10 +133,6 @@ class Player(DirectObject):
     def rotate(self, game):
         if not game.paused:
             if self.selected_weapon is "SMG" or "Shotgun":
-
-                camera.setPosHpr(self.actor.getX(),self.actor.getY()+10,3,0,0,0)
-                camera.lookAt(self.actor)
-            
                 md = base.win.getPointer(0) 
                 mouse_x = md.getX() 
                 mouse_y = md.getY() 
@@ -171,7 +148,6 @@ class Player(DirectObject):
         
     def update_counters(self, game):
         pass
-
     
     def die(self):
         pass
