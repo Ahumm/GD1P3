@@ -6,10 +6,12 @@ from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
 from direct.gui.DirectGui import * #for buttons and stuff
 from panda3d.ai import * # AI logic
+from pandac.PandaModules import Vec3
 import sys, math, random
 
 import player
 import enemies
+
 
 
 class World(DirectObject): #subclassing here is necessary to accept events
@@ -24,7 +26,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         render.setShaderAuto() #you probably want to use this
         
         # Mapping some keys
-        self.keyMap = {"left":0, "right":0, "forward":0, "back":0}
+        self.keyMap = {"left":0, "right":0, "forward":0, "back":0, "fire":False}
         self.accept("escape", self.pause)
         self.accept("l", self.toggle_light)
         self.accept("1", self.setSMG)
@@ -34,10 +36,12 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.accept("d", self.setKey, ["right", 1])
         self.accept("a", self.setKey, ["left", 1])
         self.accept("s", self.setKey, ["back",1])
+        self.accept("space", self.setKey, ["fire", True])
         self.accept("w-up", self.setKey, ["forward", 0])
         self.accept("d-up", self.setKey, ["right", 0])
         self.accept("a-up", self.setKey, ["left", 0])
         self.accept("s-up", self.setKey, ["back", 0])
+        self.accept("space-up", self.setKey, ["fire", False])
 
         # Empty lists to track stuff
         self.enemies = []
@@ -137,7 +141,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         render.setLight(self.fillLightNP)
         
     def setupCollisions(self):
-        pass
+        base.bullets = render.attachNewNode("bullets")
         
         
     def pause(self):
