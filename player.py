@@ -30,23 +30,46 @@ class Player(DirectObject):
         self.smg_burst_count = 3
         self.smg_fire_rate = 5
         self.smg_fire_counter = 0
+
         self.last_shot_fired = 0.0
+
+        self.rotate_counter = 0
+        self.rotate_timer = 10
+
         self.actor = Actor("models/player")
         self.actor.reparentTo(render)
         self.actor.setScale(0.2)
         self.actor.setH(-90)
         self.actor.setPos(game.player_start)
+
         self.dt = globalClock.getDt()
        
         camera.setPosHpr(self.actor.getX()+20,self.actor.getY()+10,4,0,0,0)
+
+        camera.reparentTo(self.actor)
+        camera.setPosHpr(20,10,4,0,0,0)
+
         #camera.lookAt(self.actor)
         
         # Set Default Weapon
         self.selected_weapon = "SMG"
         
         # Add headlights
-        self.left_headlight = self.actor.attachNewNode(Spotlight("left"))
-        self.left_headlight.node().setColor( Vec4( .35, .35, .35, 1 ) )
+        self.left_light = Spotlight('left')
+        self.right_light = Spotlight('right')
+        self.left_light.setColor(VBase4(1,1,1,1))
+        self.right_light.setColor(VBase4(1,1,1,1))
+        self.lens = PerspectiveLens()
+        self.lens.setFov(16,10)
+        self.left_light.setLens(self.lens)
+        self.left_light_node = self.actor.attachNewNode(self.left_light)
+        self.left_light_node.node().setAttenuation(Vec3(1,0.0,0.0))
+        self.left_light_node.setPosHpr(0,3,-1,-90,-10,0)
+        self.right_light.setLens(self.lens)
+        self.right_light_node = self.actor.attachNewNode(self.right_light)
+        self.right_light_node.node().setAttenuation(Vec3(1,0.0,0.0))
+        self.right_light_node.setPosHpr(0,-3,-1,-90,-10,0)
+        
         
         # Add Movement Task
         taskMgr.add(self.move, "PlayerMove", extraArgs= [game])
@@ -65,6 +88,10 @@ class Player(DirectObject):
     def set_weapon(self, weapon):
         self.selected_weapon = weapon
         print "Weapon is now " + weapon
+        
+        
+    def shoot(self, game):
+        print "Bang Bang"
     
     def fire(self):
         if self.selected_weapon == "SMG":
@@ -100,22 +127,51 @@ class Player(DirectObject):
                 entries.append(entry)
             entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
             if (len(entries)>0) and (entries[0].getIntoNode().getName() == "terrain"):
-                self.actor.setZ(entries[0].getSurfacePoint(render).getZ()+4)
+                #self.vector = (entries[0].getContactNormal(self.actor))
+                self.actor.setZ(entries[0].getSurfacePoint(render).getZ()+2)
             else:
                 self.actor.setPos(self.player_start_pos)
                 
             # Basic Camera Repositioning, need to tweak.
-            camera.setPosHpr(self.actor.getX(),self.actor.getY()+10,self.actor.getZ()+3,self.actor.getH(),0,0)
+            camera.setPosHpr(-45,0,10,0,0,0)
             camera.lookAt(self.actor)
         return Task.cont
+        
+        
+    def toggle_light(self):
+        if render.hasLight(self.left_light_node):
+            render.clearLight(self.left_light_node)
+        else:
+            render.setLight(self.left_light_node)
+            
+        if render.hasLight(self.right_light_node):
+            render.clearLight(self.right_light_node)
+        else:
+            render.setLight(self.right_light_node)
     
     def rotate(self, game):
         if not game.paused:
             if self.selected_weapon is "SMG" or "Shotgun":
+
                 camera.setPosHpr(self.actor.getX(),self.actor.getY()+10,3,0,0,0)
                 camera.lookAt(self.actor)
             
-            
+                md = base.win.getPointer(0) 
+                mouse_x = md.getX() 
+                mouse_y = md.getY() 
+                if mouse_x < base.win.getXSize()/4:
+                    self.actor.setH(self.actor.getH() +  1)
+         
+                elif mouse_x > 3*base.win.getXSize()/4:
+                    self.actor.setH(self.actor.getH() - 1)
+                   
+
+        return Task.cont
+        
+        
+    def update_counters(self, game):
+        pass
+
     
     def die(self):
         pass
