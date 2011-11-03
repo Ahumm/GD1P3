@@ -101,7 +101,8 @@ class Player(DirectObject):
                 entries.append(entry)
             entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
             if (len(entries)>0) and (entries[0].getIntoNode().getName() == "terrain"):
-                self.actor.setZ(entries[0].getSurfacePoint(render).getZ()+4)
+                self.vector = (entries[0].getContactNormal(self.actor))
+                self.actor.setZ(entries[0].getSurfacePoint(render).getZ()+2)
             else:
                 self.actor.setPos(self.player_start_pos)
                 

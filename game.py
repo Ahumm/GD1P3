@@ -10,6 +10,7 @@ import sys, math, random
 
 import player
 import enemies
+import explosions
 
 
 class World(DirectObject): #subclassing here is necessary to accept events
@@ -26,6 +27,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         # Mapping some keys
         self.keyMap = {"left":0, "right":0, "forward":0, "back":0}
         self.accept("escape", self.pause)
+        self.accept("space", self.boom)
         self.accept("l", self.toggle_light)
         self.accept("1", self.setSMG)
         self.accept("2", self.setShotgun)
@@ -45,9 +47,10 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.mortars = []
         
         # Find the start position
-        self.player_start = (0,0,10)
+        self.player_start = (0,0,0)
         # Make a player object
         self.player = player.Player(self)
+        self.count = 0
         
         
         #Load Environment
@@ -83,18 +86,20 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.cgcolnp = camera.attachNewNode(self.cgcol)
         self.cghandler = CollisionHandlerQueue()
         self.cTrav.addCollider(self.cgcolnp, self.cghandler)
-        
-        #self.player_cgcolnp.show()
-        #self.cgcolnp.show()
-        #self.cTrav.showCollisions(render)
+
         
         self.paused = False
         self.setAI()
         
-        self.newEnemy = enemies.Enemy1(self)
-        self.enemies.append(self.newEnemy)
-        self.AIworld.addAiChar(self.newEnemy.setupAI(self.player.actor))
+        for i in range(5):	
+            self.newEnemy = enemies.Enemy1(self)	
+            self.enemies.append(self.newEnemy)
+            self.AIworld.addAiChar(self.newEnemy.setupAI(self.player.actor))
         
+        self.explosions_handler = explosions.Explosions_Manager()
+        
+    def boom(self):
+        self.explosions_handler.Mortar_Explosion(Point3(0+10*self.count,0-self.count,4))
         
     def setKey(self, key, value):
         self.keyMap[key] = value
