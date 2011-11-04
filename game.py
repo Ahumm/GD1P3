@@ -6,10 +6,13 @@ from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
 from direct.gui.DirectGui import * #for buttons and stuff
 from panda3d.ai import * # AI logic
+from pandac.PandaModules import Vec3
 import sys, math, random
 
 import player
 import enemies
+import explosions
+
 
 
 class World(DirectObject): #subclassing here is necessary to accept events
@@ -24,8 +27,9 @@ class World(DirectObject): #subclassing here is necessary to accept events
         render.setShaderAuto() #you probably want to use this
         
         # Mapping some keys
-        self.keyMap = {"left":0, "right":0, "forward":0, "back":0}
+        self.keyMap = {"left":0, "right":0, "forward":0, "back":0, "fire":False}
         self.accept("escape", self.pause)
+        self.accept("space", self.boom)
         self.accept("l", self.toggle_light)
         self.accept("1", self.setSMG)
         self.accept("2", self.setShotgun)
@@ -34,10 +38,12 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.accept("d", self.setKey, ["right", 1])
         self.accept("a", self.setKey, ["left", 1])
         self.accept("s", self.setKey, ["back",1])
+        self.accept("space", self.setKey, ["fire", True])
         self.accept("w-up", self.setKey, ["forward", 0])
         self.accept("d-up", self.setKey, ["right", 0])
         self.accept("a-up", self.setKey, ["left", 0])
         self.accept("s-up", self.setKey, ["back", 0])
+        self.accept("space-up", self.setKey, ["fire", False])
 
         # Empty lists to track stuff
         self.enemies = []
@@ -45,9 +51,10 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.mortars = []
         
         # Find the start position
-        self.player_start = (0,0,10)
+        self.player_start = (0,0,0)
         # Make a player object
         self.player = player.Player(self)
+        self.count = 0
         
         
         #Load Environment
@@ -83,19 +90,24 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.cgcolnp = camera.attachNewNode(self.cgcol)
         self.cghandler = CollisionHandlerQueue()
         self.cTrav.addCollider(self.cgcolnp, self.cghandler)
-        
+
         self.player_cgcolnp.show()
         self.cgcolnp.show()
         self.cTrav.showCollisions(render)
-        
+     
         self.paused = False
         self.setAI()
         
-        for i in range(5):
-            self.newEnemy = enemies.Enemy1(self)
+
+        for i in range(5):	
+            self.newEnemy = enemies.Enemy1(self)	
             self.enemies.append(self.newEnemy)
             self.AIworld.addAiChar(self.newEnemy.setupAI(self.player.actor))
         
+        #self.explosions_handler = explosions.Explosions_Manager()
+        
+    def boom(self):
+        self.explosions_handler.Mortar_Explosion(Point3(0+10*self.count,0-self.count,4))
         
     def setKey(self, key, value):
         self.keyMap[key] = value
@@ -138,7 +150,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         render.setLight(self.fillLightNP)
         
     def setupCollisions(self):
-        pass
+        base.bullets = render.attachNewNode("bullets")
         
         
     def pause(self):
