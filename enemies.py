@@ -34,6 +34,8 @@ class Enemy1(object):
         
         self.pursue_start = False
         self.evade_start = False
+        self.timer = 300
+        self.fire_rate = 180
         
         #self.heightTask = taskMgr.add(self.updateHeight,'EnemyHeight',extraArgs=[game])
     
@@ -86,9 +88,9 @@ class Enemy1(object):
             self.evade_start = True
             self.AIbehaviors.flee(game.player.actor,30,10,0.5)
             
-        if self.distanceToTarget() < 2:
+        if self.distanceToTarget() <= 20:
             self.pursue_start = False
-        if self.distanceToTarget() > 10:
+        if self.distanceToTarget() > 100:
             self.evade_start = False
             
         self.resume_e()
@@ -123,14 +125,19 @@ class Enemy1(object):
         self.AIbehaviors.resumeAi("wander")
     
     def fire(self,game):
-        heading = self.actor.getH()
-        player_angle = math.degrees(math.arctan((self.actor.getX()-game.player.actor.getX())**2 + (self.actor.getY()-game.player.actor.getY())**2))
-        angle_to_player = heading - playerangle
+        # Get the angle between current heading and that looking directly at the player
+        h1 = self.actor.getH()
+        self.actor.lookAt(game.player.actor)
+        h2 = self.actor.getH()
+        self.actor.setH(h1)
+        h = math.fabs(math.fabs(h1 - h2) - 180)
         
-        print "%s ::: %s ::: %s" %(heading,player_angle,angle_to_player)
-        if self.pursue_start:
-            print "PEWPEW!"
-            pass
+        # Firing angle and fire rate code
+        if h < 15 and self.timer <= 0:
+            ## Put firing code here
+            self.timer = self.fire_rate
+        else:
+            self.timer -= 1
     
     def die(self):
         taskMgr.remove(self.heightTask)
