@@ -5,7 +5,7 @@ from direct.actor.Actor import Actor #for animated models
 from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
 
-import bullets
+
 
 class Player(DirectObject):
     def __init__(self, game):
@@ -39,9 +39,27 @@ class Player(DirectObject):
         self.actor.setScale(0.2)
         self.actor.setH(-90)
         self.actor.setPos(game.player_start)
+        self.max_velocity = 45
+        self.max_negative_velocity = -45
+        self.x_vel = 0
+        self.y_vel = 0
+        self.min_velocity = 0
+        self.acceleration = 1
+        self.drift = 0.5
+        self.min_expo = 50
+        self.max_expo= 100
+        self.expo = 75
+        self.expo_increasing = True
+        self.min_bob = -0.1
+        self.max_bob = 0.1
+        self.bob = 0
+        self.bob_rate = 0.005
+        self.bob_up = False
         camera.reparentTo(self.actor)
         camera.setPosHpr(20,10,4,0,0,0)
         #camera.lookAt(self.actor)
+        
+
         
         # Set Default Weapon
         self.selected_weapon = "SMG"
@@ -55,14 +73,38 @@ class Player(DirectObject):
         self.lens.setFov(16,10)
         self.left_light.setLens(self.lens)
         self.left_light_node = self.actor.attachNewNode(self.left_light)
-        self.left_light_node.node().setAttenuation(Vec3(1,0.0,0.0))
+        self.left_light_node.node().setAttenuation(Vec3(0.5,0.0,0.0))
         self.left_light_node.setPosHpr(0,3,-1,-90,-10,0)
         self.right_light.setLens(self.lens)
         self.right_light_node = self.actor.attachNewNode(self.right_light)
-        self.right_light_node.node().setAttenuation(Vec3(1,0.0,0.0))
+        self.right_light_node.node().setAttenuation(Vec3(0.5,0.0,0.0))
         self.right_light_node.setPosHpr(0,-3,-1,-90,-10,0)
         
+        # Some hover lights
+        self.left_hover = Spotlight('left_hover')
+        self.left_hover.setColor(VBase4(0,0.1,1,1))
+        self.hover_lens = PerspectiveLens()
+        self.hover_lens.setFov(36,36)
+        self.left_hover_node = self.actor.attachNewNode(self.left_hover)
+        self.left_hover_node.node().setAttenuation(Vec3(0.75,0.0,0.0))
+        self.left_hover_node.node().setExponent(100)
+        self.left_hover.setSpecularColor(VBase4(0.2,0.2,0,1))
+        self.left_hover_node.setPosHpr(1,4,-2,-90,-95,0)
+        self.right_hover = Spotlight('right_r_hover')
+        self.right_hover.setColor(VBase4(0,0,1,1))
+        self.right_hover_node = self.actor.attachNewNode(self.right_hover)
+        self.right_hover_node.node().setAttenuation(Vec3(0.75,0.0,0.0))
+        self.right_hover_node.node().setExponent(100)
+        self.right_hover.setSpecularColor(VBase4(0.2,0.2,0,1))
+        self.right_hover_node.setPosHpr(1,-4,-2,-90,-95,0)
+      
+        
+        render.setLight(self.left_hover_node)
+        render.setLight(self.right_hover_node)
+
+        
         # Needed for pitch changes
+        self.actor.setR(-1)
         self.oldz = self.actor.getZ()
         
         # Add Movement Task
@@ -70,6 +112,8 @@ class Player(DirectObject):
         
         # Add Rotate Task
         taskMgr.add(self.rotate, "PlayerRotate", extraArgs=[game])
+        
+        taskMgr.add(self.hover, "PlayerHover", extraArgs=[game])
         
         
         # Add Logic Update Task
@@ -119,7 +163,7 @@ class Player(DirectObject):
     def update_counters(self, game):
         if not game.paused:
             if self.selected_weapon == "SMG":
-                if not self.smg_can_fire:
+                if not self.smg_can_fire and not self.smg_reloading:
                     if self.smg_fire_counter > 0:
                         self.smg_fire_counter -= 1
                     if self.smg_fire_counter == 0:
@@ -130,10 +174,11 @@ class Player(DirectObject):
                     if self.smg_reload_counter == 0:
                         self.smg_mag = 30
                         self.smg_reloading = False
+                        self.smg_can_fire = True
                         print "SMG reloaded"
         
             elif self.selected_weapon =="Shotgun":
-                if not self.shotgun_can_fire:
+                if not self.shotgun_can_fire and not self.shotgun_reloading:
                     if self.shotgun_fire_counter > 0:
                         self.shotgun_fire_counter -=1
                     if self.shotgun_fire_counter == 0:
@@ -144,6 +189,7 @@ class Player(DirectObject):
                     if self.shotgun_reload_counter == 0:
                         self.shotgun_mag = 8
                         self.shotgun_reloading = False
+                        self.shotgun_can_fire = True
                         print "Shotgun reloaded"
                         
             elif self.selected_weapon == "Mortar":
@@ -153,21 +199,60 @@ class Player(DirectObject):
                     if self.mortar_load_counter == 0:
                         self.mortar_loaded = True
                         print "Mortar loaded"
+            
         return Task.cont
             
     def move(self, game):
         if not game.paused:
+            self.moving = False
             self.player_start_pos = self.actor.getPos()
             if game.keyMap["left"]:
-                self.actor.setY(self.actor,  25 * globalClock.getDt())
+                self.moving = True
+                self.y_vel += self.acceleration
+                if self.y_vel > self.max_velocity:
+                    self.y_vel = self.max_velocity
+          
             if game.keyMap["right"]:
-                self.actor.setY(self.actor, - 25 * globalClock.getDt())
+                self.moving = True
+                self.y_vel -= self.acceleration
+                if self.y_vel < self.max_negative_velocity:
+                    self.y_vel = self.max_negative_velocity
+               
             if game.keyMap["forward"]:
-                MOVE = True
-                self.actor.setX(self.actor,  25 * globalClock.getDt())
+                self.moving = True
+                self.x_vel += self.acceleration
+                if self.x_vel > self.max_velocity:
+                    self.x_vel = self.max_velocity
+                
             if game.keyMap["back"]:
-                self.actor.setX(self.actor, - 25 * globalClock.getDt())
+                self.moving = True
+                self.x_vel -= self.acceleration
+                if self.x_vel < self.max_negative_velocity:
+                    self.x_vel = self.max_negative_velocity
+               
+            if self.moving:
+                self.bob = 0
+            if  not self.moving:
+                if self.x_vel > self.min_velocity:
+                    self.x_vel -= self.drift
+                    if self.x_vel < self.min_velocity:
+                        self.x_vel = self.min_velocity
+                elif self.x_vel < self.min_velocity:
+                    self.x_vel += self.drift
+                    if self.x_vel > self.min_velocity:
+                        self.x_vel = self.min_velocity
+                if self.y_vel > self.min_velocity:
+                    self.y_vel -= self.drift
+                    if self.y_vel < self.min_velocity:
+                        self.y_vel = self.min_velocity
+                elif self.y_vel < self.min_velocity:
+                    self.y_vel += self.drift
+                    if self.y_vel > self.min_velocity:
+                        self.y_vel = self.min_velocity
             
+                
+            self.actor.setY(self.actor, self.y_vel * globalClock.getDt())
+            self.actor.setX(self.actor, self.x_vel * globalClock.getDt())
             # Check for terrain collisions
             game.cTrav.traverse(render)
             
@@ -178,18 +263,42 @@ class Player(DirectObject):
                 entries.append(entry)
             entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
             if (len(entries)>0) and (entries[0].getIntoNode().getName() == "terrain"):
+                self.actor_vector = (Vec3(self.actor.getX(),self.actor.getY(),self.actor.getZ()))
                 self.surface_normal_vector = (entries[0].getSurfaceNormal(render))
-                #print str(self.surface_normal_vector)
+                
+                self.pitch_angle = self.surface_normal_vector.angleDeg(Vec3(1,1,1))
+                
+                print "Surface: " + str(self.surface_normal_vector) + " Angle = "+str(self.pitch_angle)
+                
                 self.actor.setZ(entries[0].getSurfacePoint(render).getZ()+2)
-                if self.actor.getZ() > self.oldz:
-                    self.actor.setR(500*(0.2-self.surface_normal_vector[2]))
-                elif self.actor.getZ() < self.oldz: 
-                    self.actor.setR(-500*(0.2-self.surface_normal_vector[2]))
+                #self.actor.setR(90-self.pitch_angle)
+                #print str(self.surface_normal_vector)+"  Actor R: "+str(self.actor.getR())
             else:
                 self.actor.setPos(self.player_start_pos)
-            self.oldz = self.actor.getZ()
-            # Basic Camera Repositioning, need to tweak.
-            camera.setPosHpr(-45,0,10,0,0,0)
+                self.oldz = self.actor.getZ()
+            
+            # Bobbing when still
+            
+            if self.x_vel == 0 and self.y_vel == 0:
+                if not self.bob_up :
+                    self.bob -= self.bob_rate
+                    if self.bob < self.min_bob:
+                        self.bob = self.min_bob
+                        self.bob_up = True
+                else:
+                    self.bob+=self.bob_rate
+                    if self.bob > self.max_bob:
+                        self.bob=self.max_bob
+                        self.bob_up = False
+                        
+                self.actor.setZ(self.actor.getZ()+self.bob)
+            
+            camera.setPosHpr(-60,0,13,-90,-10,0)
+            if camera.getZ() <= entries[0].getSurfacePoint(render).getZ()+2:
+                camera.setZ(entries[0].getSurfacePoint(render).getZ()+10)
+            
+            
+            
             camera.lookAt(self.actor)
         return Task.cont
         
@@ -219,8 +328,26 @@ class Player(DirectObject):
                    
 
         return Task.cont
-        
+    
+    def hover(self,game):
+        if not game.paused: 
+            self.left_hover_node.node().setExponent(self.expo)
+            self.right_hover_node.node().setExponent(self.expo)
+
+            if self.expo_increasing:
+                self.expo += 1
+                if self.expo > self.max_expo:
+                    self.expo = self.max_expo
+                    self.expo_increasing = False
+            else:
+                self.expo -= 1
+                if self.expo < self.min_expo:
+                    self.expo = self.min_expo
+                    self.expo_increasing = True
+                    
+        return Task.cont
     
     def die(self):
         pass
         # Call the game over stuffs
+       
