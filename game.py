@@ -69,7 +69,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         
         # Player Rays
         self.player_cgray = CollisionRay()
-        self.player_cgray.setOrigin(0,0,100)
+        self.player_cgray.setOrigin(0,0,80)
         self.player_cgray.setDirection(0,0,-1)
         self.player_cgcol = CollisionNode("player_gray")
         self.player_cgcol.addSolid(self.player_cgray)
@@ -91,16 +91,20 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.cghandler = CollisionHandlerQueue()
         self.cTrav.addCollider(self.cgcolnp, self.cghandler)
 
-        
+        self.player_cgcolnp.show()
+        self.cgcolnp.show()
+        self.cTrav.showCollisions(render)
+     
         self.paused = False
         self.setAI()
         
+
         for i in range(5):	
             self.newEnemy = enemies.Enemy1(self)	
             self.enemies.append(self.newEnemy)
             self.AIworld.addAiChar(self.newEnemy.setupAI(self.player.actor))
         
-        self.explosions_handler = explosions.Explosions_Manager()
+        #self.explosions_handler = explosions.Explosions_Manager()
         
     def boom(self):
         self.explosions_handler.Mortar_Explosion(Point3(0+10*self.count,0-self.count,4))
@@ -178,6 +182,8 @@ class World(DirectObject): #subclassing here is necessary to accept events
         """ Update the AIWorld """
         #print self.enemies[0].distanceToTarget()
         self.AIworld.update()
+        for e in self.enemies:
+            e.updateHeight(self)
         return Task.cont
     
     def resume_game(self):

@@ -224,4 +224,3 @@ class Player(DirectObject):
     def die(self):
         pass
         # Call the game over stuffs
-       
