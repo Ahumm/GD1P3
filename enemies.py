@@ -98,6 +98,7 @@ class Enemy1(object):
     def updateHeight(self,game):
         startpos = self.actor.getPos()
         self.updateAI(game)
+        self.fire(game)
         entries = []
         for i in range(self.ralphGroundHandler.getNumEntries()):
             entry = self.ralphGroundHandler.getEntry(i)
@@ -121,7 +122,12 @@ class Enemy1(object):
     def resume_e(self):
         self.AIbehaviors.resumeAi("wander")
     
-    def fire(self):
+    def fire(self,game):
+        heading = self.actor.getH()
+        player_angle = math.degrees(math.arctan((self.actor.getX()-game.player.actor.getX())**2 + (self.actor.getY()-game.player.actor.getY())**2))
+        angle_to_player = heading - playerangle
+        
+        print "%s ::: %s ::: %s" %(heading,player_angle,angle_to_player)
         if self.pursue_start:
             print "PEWPEW!"
             pass
