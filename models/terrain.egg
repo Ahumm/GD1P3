@@ -4,7 +4,7 @@
   "maya2egg2012 -a model -o terrain.egg terrain7.mb"
 }
 <Texture> lambert5SG {
-  "../sourceimages/skybox.jpg"
+  "../textures/skybox.jpg"
   <Scalar> wrapu { repeat }
   <Scalar> wrapv { repeat }
   <Scalar> minfilter { linear_mipmap_linear }
