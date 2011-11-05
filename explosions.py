@@ -32,13 +32,17 @@ class Explosions_Manager(object):
         # Load ALL the images!
         self.exp_tex = self.loadTextureMovie(160, 'explosion/explosion', 'png', padding = 4)
         self.mexp_tex = self.loadTextureMovie(120, 'mortar_explosion/mortar_explosion', 'png', padding = 4)
-
+        self.sexp_tex = self.loadTextureMovie(80, 'small_explosion/small_explosion', 'png', padding = 4)
+        
         
     def Mortar_Explosion(self, position):
         Explosion(position, self.mexp_tex, 6)
         
     def Explosion(self, position):
         Explosion(position,self.exp_tex, 20)
+        
+    def Small_Explosion(self, position):
+        Explosion(position,self.sexp_tex, 10)
 
     def loadTextureMovie(self, frames, name, suffix, padding = 1):
         return [loader.loadTexture((name+"%0"+str(padding)+"d."+suffix) % i) 
