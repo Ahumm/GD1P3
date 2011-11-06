@@ -38,7 +38,7 @@ class Player(DirectObject):
         self.actor.reparentTo(render)
         self.actor.setScale(0.2)
         self.actor.setH(-90)
-        self.actor.setPos(game.player_start)
+        self.actor.setPos(0,0,4)
         self.max_velocity = 45
         self.max_negative_velocity = -45
         self.x_vel = 0
@@ -59,7 +59,17 @@ class Player(DirectObject):
         camera.setPosHpr(20,10,4,0,0,0)
         #camera.lookAt(self.actor)
         
-
+        # Collision for bullets
+        self.cTrav = CollisionTraverser()
+        self.cHandler = CollisionHandlerEvent()
+        #self.cHandler.addInPattern("
+        self.cSphere = CollisionSphere(0,0,0, 2)
+        self.cNode = CollisionNode("Player")
+        self.cNode.addSolid(self.cSphere)
+        self.cNodePath = self.actor.attachNewNode(self.cNode)
+        self.cNodePath.show()
+        #self.cTrav.addCollider(self.cNodePath, self.cHandler)
+        
         
         # Set Default Weapon
         self.selected_weapon = "SMG"
@@ -97,15 +107,10 @@ class Player(DirectObject):
         self.right_hover_node.node().setExponent(100)
         self.right_hover.setSpecularColor(VBase4(0.2,0.2,0,1))
         self.right_hover_node.setPosHpr(1,-4,-2,-90,-95,0)
-      
-        
         render.setLight(self.left_hover_node)
         render.setLight(self.right_hover_node)
 
         
-        # Needed for pitch changes
-        self.actor.setR(-1)
-        self.oldz = self.actor.getZ()
         
         # Add Movement Task
         taskMgr.add(self.move, "PlayerMove", extraArgs= [game])
@@ -113,6 +118,8 @@ class Player(DirectObject):
         # Add Rotate Task
         taskMgr.add(self.rotate, "PlayerRotate", extraArgs=[game])
         
+        
+        # Hover Task
         taskMgr.add(self.hover, "PlayerHover", extraArgs=[game])
         
         
@@ -260,7 +267,8 @@ class Player(DirectObject):
             entries = []
             for i in range(game.player_cghandler.getNumEntries()):
                 entry = game.player_cghandler.getEntry(i)
-                entries.append(entry)
+                if entry.getIntoNode().getName() != "Player":
+                    entries.append(entry)
             entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
             if (len(entries)>0) and (entries[0].getIntoNode().getName() == "terrain"):
                 self.actor_vector = (Vec3(self.actor.getX(),self.actor.getY(),self.actor.getZ()))
@@ -268,7 +276,7 @@ class Player(DirectObject):
                 
                 self.pitch_angle = self.surface_normal_vector.angleDeg(Vec3(1,1,1))
                 
-                print "Surface: " + str(self.surface_normal_vector) + " Angle = "+str(self.pitch_angle)
+                #print "Surface: " + str(self.surface_normal_vector) + " Angle = "+str(self.pitch_angle)
                 
                 self.actor.setZ(entries[0].getSurfacePoint(render).getZ()+2)
                 #self.actor.setR(90-self.pitch_angle)
