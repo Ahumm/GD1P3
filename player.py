@@ -75,7 +75,7 @@ class Player(DirectObject):
         
         
         # Set Default Weapon
-        self.selected_weapon = "Mortar"
+        self.selected_weapon = "SMG"
         
         # Add headlights
         self.left_light = Spotlight('left')
@@ -141,16 +141,6 @@ class Player(DirectObject):
         
         
     def fire(self, game):
-        if self.selected_weapon == "SMG":
-            fireRate = 100.0
-            if self.last_shot_fired > 1.0/fireRate:
-                self.last_shot_fired = 0.0
-                b = bullets.Bullet(self)
-        if self.selected_weapon == "Mortar":
-            fireRate = 1.0
-            if self.last_shot_fired > 1.0/fireRate:
-                self.last_shot_fired = 0.0
-                m = mortar.Mortar(self)
         if not game.paused:
             if self.selected_weapon == "SMG":
                 if self.smg_can_fire:
@@ -158,6 +148,9 @@ class Player(DirectObject):
                         self.smg_mag -= self.smg_burst_count
                         self.smg_fire_counter += self.smg_fire_rate
                         self.smg_can_fire = False
+                        b1 = bullets.Bullet(self)
+                        b2 = bullets.Bullet(self)
+                        b3 = bullets.Bullet(self)
                         print "SMG fired 3 rounds, "+str(self.smg_mag)+" rounds remaining"
                     if self.smg_mag == 0:
                         self.smg_reload_counter +=self.smg_reload_time
@@ -169,6 +162,12 @@ class Player(DirectObject):
                         self.shotgun_mag -= 1
                         self.shotgun_fire_counter += self.shotgun_fire_rate
                         self.shotgun_can_fire = False
+                        b1 = bullets.Bullet(self, True)
+                        b2 = bullets.Bullet(self, True)
+                        b3 = bullets.Bullet(self, True)
+                        b4 = bullets.Bullet(self, True)
+                        b5 = bullets.Bullet(self, True)
+                        b6 = bullets.Bullet(self, True)
                         print "Shotgun fired, " + str(self.shotgun_mag)+" rounds remaining"
                     if self.shotgun_mag == 0:
                         self.shotgun_reload_counter += self.shotgun_reload_time
@@ -178,7 +177,7 @@ class Player(DirectObject):
                 if self.mortar_loaded:
                     self.mortar_loaded = False
                     self.mortar_load_counter += self.mortar_load_time
-                    self.mortars -= 1
+                    m = mortar.Mortar(self)
                     print "Mortar launched"
     
     def update_counters(self, game):
@@ -288,19 +287,10 @@ class Player(DirectObject):
                     entries.append(entry)
             entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
             if (len(entries)>0) and (entries[0].getIntoNode().getName() == "terrain"):
-                self.actor_vector = (Vec3(self.actor.getX(),self.actor.getY(),self.actor.getZ()))
-                self.surface_normal_vector = (entries[0].getSurfaceNormal(render))
-                
-                self.pitch_angle = self.surface_normal_vector.angleDeg(Vec3(1,1,1))
-                
-                #print "Surface: " + str(self.surface_normal_vector) + " Angle = "+str(self.pitch_angle)
-                
                 self.actor.setZ(entries[0].getSurfacePoint(render).getZ()+2)
-                #self.actor.setR(90-self.pitch_angle)
-                #print str(self.surface_normal_vector)+"  Actor R: "+str(self.actor.getR())
             else:
                 self.actor.setPos(self.player_start_pos)
-                self.oldz = self.actor.getZ()
+
             
             # Bobbing when still
             
@@ -319,8 +309,9 @@ class Player(DirectObject):
                 self.actor.setZ(self.actor.getZ()+self.bob)
             
             camera.setPosHpr(-60,0,13,-90,-10,0)
-            if camera.getZ() <= entries[0].getSurfacePoint(render).getZ()+2:
-                camera.setZ(entries[0].getSurfacePoint(render).getZ()+10)
+            if (len(entries)>0):
+                if camera.getZ() <= entries[0].getSurfacePoint(render).getZ()+2:
+                    camera.setZ(entries[0].getSurfacePoint(render).getZ()+10)
             
             
             
@@ -341,15 +332,10 @@ class Player(DirectObject):
     
     def rotate(self, game):
         if not game.paused:
-            if self.selected_weapon is "SMG" or "Shotgun":
-                md = base.win.getPointer(0) 
-                mouse_x = md.getX() 
-                mouse_y = md.getY() 
-                if mouse_x < base.win.getXSize()/4:
-                    self.actor.setH(self.actor.getH() +  1)
-         
-                elif mouse_x > 3*base.win.getXSize()/4:
-                    self.actor.setH(self.actor.getH() - 1)
+            if game.keyMap["rot_left"]:
+                self.actor.setH(self.actor.getH() +  1)
+            if game.keyMap["rot_right"]:
+                self.actor.setH(self.actor.getH() - 1)
                    
 
         return Task.cont
