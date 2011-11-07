@@ -143,7 +143,7 @@ class Player(DirectObject):
     def shoot(self, game):
         print "Bang Bang"
         
-    def fire(self):
+    def fire(self,game):
         if self.selected_weapon == "SMG":
             fireRate = 100.0
             if self.last_shot_fired > 1.0/fireRate:
@@ -252,7 +252,7 @@ class Player(DirectObject):
                 self.actor.setX(self.actor, - 25 * globalClock.getDt())
             if game.keyMap["fire"] == True:
                 self.last_shot_fired += self.dt
-                self.fire()
+                self.fire(game)
                 self.moving = True
                 self.x_vel -= self.acceleration
                 if self.x_vel < self.max_negative_velocity:

@@ -115,10 +115,12 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.paused = False
         self.setAI()
         
-        for i in range(5):    
-            self.newEnemy = enemies.Enemy1(self)	
-            self.enemies.append(self.newEnemy)
-            self.AIworld.addAiChar(self.newEnemy.setupAI(self.player.actor))
+        # Set the enemy spawn points and frequenct of spawns
+        self.wavetimer = 30
+        self.spawnlocs = [(30,30,0),( 30,-30,0),(-30,30,0),(-30,-30,0),
+                          (30, 0,0),(-30,  0,0),(  0,30,0),(  0,-30,0)]
+        
+        self.spawnTask = taskMgr.doMethodLater(2,self.spawnEnemies,'spawnTask')
         
         #self.explosions_handler = explosions.Explosions_Manager()
         
@@ -184,26 +186,25 @@ class World(DirectObject): #subclassing here is necessary to accept events
         """ Set up The AI world"""
         # Create the world
         self.AIworld = AIWorld(render)
-        
-        # Example from the Panda3D manual:
-            # Make the AI character
-            #self.AIchar = AICharacter("seeker",self.seeker, 100, 0.05, 5)
-            # Add the character to the world
-            #self.AIworld.addAiChar(self.AIchar)
-            # Get the possible AI behaviors
-            #self.AIbehaviors = self.AIchar.getAiBehaviors()
-            # Set the character's behavior
-            #self.AIbehaviors.seek(self.target)
-            # Run it
-            #self.seeker.loop("run")
-        
+
         # Add the AIworld updater
         taskMgr.add(self.AIUpdate, "AIUpdate")
-        
+    
+    def spawnEnemies(self,task):
+        print "Spawning Wave!"
+        task.delayTime = self.wavetimer
+        for i in range(5):
+            self.newEnemy = enemies.Enemy1(self,random.choice(self.spawnlocs))	
+            self.enemies.append(self.newEnemy)
+            self.AIworld.addAiChar(self.newEnemy.setupAI(self.player.actor))
+        return task.again
+    
     def AIUpdate(self,task):
         """ Update the AIWorld """
-        #print self.enemies[0].distanceToTarget()
-        self.AIworld.update()
+        if not self.paused:
+            self.AIworld.update()
+            for e in self.enemies:
+                e.updateHeight(self)
         return Task.cont
     
     def resume_game(self):

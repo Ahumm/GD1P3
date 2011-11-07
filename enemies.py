@@ -10,14 +10,14 @@ import math
 
 #Class for each enemy, lot of (planned) variance, seemed easier than subclassing, feel free to change
 class Enemy1(object):
-    def __init__(self,game):
+    def __init__(self,game,spawnloc = (0,0,0)):
         self.health = 20
         self.value = 10
         
         # Load the enemy model and set the initial position of it
         self.loadModel()
-        self.actor.setPos(game.player_start)
-        self.enemy_start_pos = game.player_start
+        self.actor.setPos(spawnloc)
+        self.enemy_start_pos = spawnloc
         
         # Enemy Rays
         self.ralphGroundRay = CollisionRay()
@@ -37,7 +37,17 @@ class Enemy1(object):
         self.timer = 300
         self.fire_rate = 180
         
-        self.heightTask = taskMgr.add(self.updateHeight,'EnemyHeight',extraArgs=[game])
+        # Collision stuff for bullets
+        #self.cTrav = CollisionTraverser()
+        #self.cHandler = CollisionHandlerEvent()
+        #self.cSphere = CollisionSphere(0,0,0, 2)
+        #self.cNode = CollisionNode("Enemy")
+        #self.cNode.addSolid(self.cSphere)
+        #self.cNodePath = self.actor.attachNewNode(self.cNode)
+        #self.cNodePath.show()
+        #self.cTrav.addCollider(self.cNodePath, self.cHandler)
+        
+        #self.heightTask = taskMgr.add(self.updateHeight,'EnemyHeight',extraArgs=[game])
     
     def take_damage(self, damage):
         """
