@@ -278,7 +278,6 @@ class Player(DirectObject):
                     if self.y_vel > self.min_velocity:
                         self.y_vel = self.min_velocity
             
-                
             self.actor.setY(self.actor, self.y_vel * globalClock.getDt())
             self.actor.setX(self.actor, self.x_vel * globalClock.getDt())
             # Check for terrain collisions

@@ -37,7 +37,7 @@ class Enemy1(object):
         self.timer = 300
         self.fire_rate = 180
         
-        #self.heightTask = taskMgr.add(self.updateHeight,'EnemyHeight',extraArgs=[game])
+        self.heightTask = taskMgr.add(self.updateHeight,'EnemyHeight',extraArgs=[game])
     
     def take_damage(self, damage):
         """
@@ -112,6 +112,17 @@ class Enemy1(object):
         else:
             self.actor.setPos(startpos)
         self.actor.setHpr(self.actor.getH(),0,0)
+        
+        # Keep enemy within bounds (HACK)
+        if self.actor.getX() > 50:
+            self.actor.setPos(50,self.actor.getY(),self.actor.getZ())
+        if self.actor.getX() < -50:
+            self.actor.setPos(-50,self.actor.getY(),self.actor.getZ())
+        if self.actor.getY() < -50:
+            self.actor.setPos(self.actor.getX(),-50,self.actor.getZ())
+        if self.actor.getX() > 50:
+            self.actor.setPos(self.actor.getX(),50,self.actor.getZ())
+        
         return Task.cont
     
     #AI Controls
