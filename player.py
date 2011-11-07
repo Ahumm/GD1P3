@@ -246,10 +246,6 @@ class Player(DirectObject):
                     self.x_vel = self.max_velocity
                 
             if game.keyMap["back"]:
-                self.actor.setX(self.actor, - 25 * globalClock.getDt())
-            if game.keyMap["fire"] == True:
-                self.last_shot_fired += self.dt
-                self.fire(game)
                 self.moving = True
                 self.x_vel -= self.acceleration
                 if self.x_vel < self.max_negative_velocity:
