@@ -25,7 +25,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         
         
         # Mapping some keys
-        self.keyMap = {"left":0, "right":0, "forward":0, "back":0, "shoot":0}
+        self.keyMap = {"left":0, "right":0, "forward":0, "back":0, "shoot":0, "rot_left":0, "rot_right":0}
         self.accept("escape", self.pause)
         self.accept("space", self.setKey, ["shoot", 1])
         self.accept("space-up",self.setKey, ["shoot", 0])
@@ -38,6 +38,10 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.accept("d", self.setKey, ["right", 1])
         self.accept("a", self.setKey, ["left", 1])
         self.accept("s", self.setKey, ["back",1])
+        self.accept("arrow_left", self.setKey, ["rot_left",1])
+        self.accept("arrow_left-up", self.setKey, ["rot_left",0])
+        self.accept("arrow_right", self.setKey, ["rot_right",1])
+        self.accept("arrow_right-up", self.setKey, ["rot_right", 0])
         self.accept("mouse1", self.setKey, ["fire", True])
         self.accept("w-up", self.setKey, ["forward", 0])
         self.accept("d-up", self.setKey, ["right", 0])

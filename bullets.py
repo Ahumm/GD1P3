@@ -13,17 +13,29 @@ import sys, math, random
 #temporary - variables need to be changed
 
 class Bullet():
-    def __init__(self, parent):
-    
+    def __init__(self, parent, shotgun = False):
+        random.seed()
         self.parent = parent
         self.bulletNode = render.attachNewNode("bullet")
         self.bulletNP = loader.loadModel("models/ball")
-        self.bulletNP.setScale(.25)
-        B = self.bulletNP
-        B.reparentTo(self.bulletNode)
-        B.setPythonTag("owner", self)
-        B.setPos(parent.actor,0,1,0)
-        B.setHpr(parent.actor,0,0,0)
+        if not shotgun:
+            self.bulletNP.setScale(.25)
+            B = self.bulletNP
+            B.reparentTo(self.bulletNode)
+            B.setPythonTag("owner", self)
+            self.offset = random.uniform(-0.5,0.5)
+            print str(self.offset)
+            B.setPos(parent.actor,4+self.offset,2*self.offset,2*self.offset)
+            B.setHpr(parent.actor,0,0,0)
+        if shotgun:
+            self.bulletNP.setScale(.10)
+            B = self.bulletNP
+            self.offset = random.uniform(-2,2)
+            print str(self.offset)
+            B.reparentTo(self.bulletNode)
+            B.setPythonTag("owner", self)
+            B.setPos(parent.actor,4+self.offset,2*self.offset, self.offset)
+            B.setHpr(parent.actor,0,0,0)
         
         #Setup Collision
         #Bullet
@@ -36,16 +48,25 @@ class Bullet():
         self.bulletColNode.setIntoCollideMask(BitMask32.allOff())
         self.bulletColNode.setFromCollideMask(BitMask32.bit(5))
         self.bulletColNodePath = B.attachNewNode(self.bulletColNode)
-        self.bulletColNodePath.setName("bullet")
+        if shotgun:
+            self.bulletColNodePath.setName("shotgun_bullet")
+        else:
+            self.bulletColNodePath.setName("bullet")
         self.bulletColNodePath.show()
         self.bulletTrav.addCollider(self.bulletColNodePath, self.bulletHandler)
         #messenger.toggleVerbose()
         
         #vars like speed, damage, distance will be passed to some method later
-        self.speed = 40.0
-        self.distance = 20.0
-        self.deleteMe = 0
-        self.damage = 12
+        if shotgun:
+            self.speed = 400
+            self.distance = 40.0
+            self.deleteMe = 0
+            self.damage = 8
+        else:
+            self.speed = 280
+            self.distance = 70.0
+            self.deleteMe = 0
+            self.damage = 12
         #tmaxLife is created var, we need it so bullets dont go on forever
         self.maxLife = self.distance / self.speed
         self.life = 0.00001  
