@@ -4,6 +4,7 @@ from direct.showbase.DirectObject import DirectObject #for event handling
 from direct.actor.Actor import Actor #for animated models
 from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
+
 import bullets
 import mortar
 
@@ -14,7 +15,6 @@ class Player(DirectObject):
         # Set ALL the variables!
         self.health = 100
         self.speed = 0
-        self.shotgun_ammo = 32
         self.shotgun_mag = 8
         self.shotgun_can_fire = True
         self.shotgun_fire_rate = 20
@@ -22,7 +22,6 @@ class Player(DirectObject):
         self.shotgun_reloading = False
         self.shotgun_reload_time = 180
         self.shotgun_reload_counter = 0
-        self.mortars = 12
         self.mortar_loaded = True
         self.mortar_load_time = 240
         self.mortar_load_counter = 0
@@ -140,10 +139,8 @@ class Player(DirectObject):
         print "Weapon is now " + weapon
         
         
-    def shoot(self, game):
-        print "Bang Bang"
         
-    def fire(self):
+    def fire(self, game):
         if self.selected_weapon == "SMG":
             fireRate = 100.0
             if self.last_shot_fired > 1.0/fireRate:

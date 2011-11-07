@@ -146,7 +146,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
     def player_shoot(self, task):
         if not self.paused:
             if self.keyMap["shoot"]:
-                self.player.shoot(self)
+                self.player.fire(self)
         return Task.cont
         
     def setupLights(self):
