@@ -40,11 +40,11 @@ class Enemy1(object):
         # Collision stuff for bullets
         #self.cTrav = CollisionTraverser()
         #self.cHandler = CollisionHandlerEvent()
-        #self.cSphere = CollisionSphere(0,0,0, 2)
-        #self.cNode = CollisionNode("Enemy")
-        #self.cNode.addSolid(self.cSphere)
-        #self.cNodePath = self.actor.attachNewNode(self.cNode)
-        #self.cNodePath.show()
+        self.cSphere = CollisionSphere(0,0,2, 4)
+        self.cNode = CollisionNode("Enemy")
+        self.cNodePath = self.actor.attachNewNode(self.cNode)
+        self.cNodePath.node().addSolid(self.cSphere)
+        self.cNodePath.show()
         #self.cTrav.addCollider(self.cNodePath, self.cHandler)
         
         #self.heightTask = taskMgr.add(self.updateHeight,'EnemyHeight',extraArgs=[game])
@@ -117,8 +117,8 @@ class Enemy1(object):
             entries.append(entry)
         entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(),
                                      x.getSurfacePoint(render).getZ()))
-        if (len(entries)>0) and (entries[0].getIntoNode().getName() == "terrain"):
-            self.actor.setZ(entries[0].getSurfacePoint(render).getZ())
+        if (len(entries)>0) and (entries[1].getIntoNode().getName() == "terrain"):
+            self.actor.setZ(entries[1].getSurfacePoint(render).getZ())
         else:
             self.actor.setPos(startpos)
         self.actor.setHpr(self.actor.getH(),0,0)
