@@ -4,6 +4,8 @@ from direct.showbase.DirectObject import DirectObject #for event handling
 from direct.actor.Actor import Actor #for animated models
 from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
+import bullets
+import mortar
 
 class Player(DirectObject):
     def __init__(self, game):
@@ -37,10 +39,12 @@ class Player(DirectObject):
         self.actor.setPos(game.player_start)
         camera.reparentTo(self.actor)
         camera.setPosHpr(20,10,4,0,0,0)
+        self.last_shot_fired = 0.0
+        self.dt = globalClock.getDt()
         #camera.lookAt(self.actor)
         
         # Set Default Weapon
-        self.selected_weapon = "SMG"
+        self.selected_weapon = "Mortar"
         
         # Add headlights
         self.left_light = Spotlight('left')
@@ -79,6 +83,19 @@ class Player(DirectObject):
         
     def shoot(self, game):
         print "Bang Bang"
+        
+    def fire(self):
+        if self.selected_weapon == "SMG":
+            fireRate = 100.0
+            if self.last_shot_fired > 1.0/fireRate:
+                self.last_shot_fired = 0.0
+                b = bullets.Bullet(self)
+        if self.selected_weapon == "Mortar":
+            fireRate = 1.0
+            if self.last_shot_fired > 1.0/fireRate:
+                self.last_shot_fired = 0.0
+                m = mortar.Mortar(self)
+               
     
     def move(self, game):
         if not game.paused:
@@ -92,7 +109,9 @@ class Player(DirectObject):
                 self.actor.setX(self.actor,  25 * globalClock.getDt())
             if game.keyMap["back"]:
                 self.actor.setX(self.actor, - 25 * globalClock.getDt())
-            
+            if game.keyMap["fire"] == True:
+                self.last_shot_fired += self.dt
+                self.fire()
             # Check for terrain collisions
             game.cTrav.traverse(render)
             

@@ -1,6 +1,7 @@
 import direct.directbase.DirectStart #starts Panda
 from pandac.PandaModules import * #basic Panda modules
 from direct.showbase.DirectObject import DirectObject #for event handling
+from direct.showbase.ShowBase import ShowBase
 from direct.actor.Actor import Actor #for animated models
 from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
@@ -12,7 +13,6 @@ import sys, math, random
 import player
 import enemies
 import explosions
-
 
 
 class World(DirectObject): #subclassing here is necessary to accept events
@@ -38,17 +38,20 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.accept("d", self.setKey, ["right", 1])
         self.accept("a", self.setKey, ["left", 1])
         self.accept("s", self.setKey, ["back",1])
-        self.accept("space", self.setKey, ["fire", True])
+        self.accept("mouse1", self.setKey, ["fire", True])
         self.accept("w-up", self.setKey, ["forward", 0])
         self.accept("d-up", self.setKey, ["right", 0])
         self.accept("a-up", self.setKey, ["left", 0])
         self.accept("s-up", self.setKey, ["back", 0])
-        self.accept("space-up", self.setKey, ["fire", False])
+        self.accept("mouse1-up", self.setKey, ["fire", False])
 
         # Empty lists to track stuff
         self.enemies = []
-        self.bullets = []
+        #self.bullets = []
         self.mortars = []
+        
+        
+        
         
         # Find the start position
         self.player_start = (0,0,0)
@@ -90,8 +93,24 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.cgcolnp = camera.attachNewNode(self.cgcol)
         self.cghandler = CollisionHandlerQueue()
         self.cTrav.addCollider(self.cgcolnp, self.cghandler)
-
         
+        #test enemy
+        base.enemiez = render.attachNewNode("enemiez")
+        enemyNode = base.enemiez.attachNewNode("enemy")
+        enemy = loader.loadModel("models/ball")
+        enemy.reparentTo(render)
+        enemy.setPythonTag("owner", self)
+        enemy.setPos(0,-10,1.5)
+        
+        enemySphere = CollisionSphere(0,0,0,2)
+        enemyColNode = CollisionNode("enemy")
+        enemyColNode.addSolid(enemySphere)
+        enemyColNode.setCollideMask(BitMask32.bit(5))
+        enemyColNodePath = enemy.attachNewNode(enemyColNode)
+        enemyColNodePath.setName("enemy")
+        enemyColNodePath.show()
+        
+   
         self.paused = False
         self.setAI()
         
@@ -143,11 +162,12 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.fillLight.setColor((.4,.4,.4, 1))
         self.fillLightNP = render.attachNewNode(self.fillLight)
         self.fillLightNP.setHpr(30, 0, 0)
-        render.setLight(self.fillLightNP)
+        render.setLight(self.fillLightNP)    
+        
         
     def setupCollisions(self):
-        base.bullets = render.attachNewNode("bullets")
-        
+        #base.bullets = render.attachNewNode("bullets")
+        pass
         
     def pause(self):
         self.paused = True
