@@ -120,7 +120,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
             self.enemies.append(self.newEnemy)
             self.AIworld.addAiChar(self.newEnemy.setupAI(self.player.actor))
         
-        self.explosions_handler = explosions.Explosions_Manager()
+        #self.explosions_handler = explosions.Explosions_Manager()
         
         taskMgr.add(self.player_shoot, "Shoot")
         
@@ -146,7 +146,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
     def player_shoot(self, task):
         if not self.paused:
             if self.keyMap["shoot"]:
-                self.player.shoot(self)
+                self.player.fire(self)
         return Task.cont
         
     def setupLights(self):
