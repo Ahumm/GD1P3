@@ -139,6 +139,7 @@ class Player(DirectObject):
         print "Weapon is now " + weapon
         
         
+
         
     def fire(self, game):
         if not game.paused:
@@ -248,7 +249,7 @@ class Player(DirectObject):
                 self.actor.setX(self.actor, - 25 * globalClock.getDt())
             if game.keyMap["fire"] == True:
                 self.last_shot_fired += self.dt
-                self.fire()
+                self.fire(game)
                 self.moving = True
                 self.x_vel -= self.acceleration
                 if self.x_vel < self.max_negative_velocity:
