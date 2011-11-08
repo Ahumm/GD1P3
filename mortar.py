@@ -14,52 +14,72 @@ import sys, math, random
 #temporary - variaMles need to Me changed
 
 class Mortar():
-    def __init__(self, parent):
+    def __init__(self, player, game):
     
-        self.parent = parent
+        
         self.mortarNode = render.attachNewNode("mortar")
         self.mortarNP = loader.loadModel("models/ball")
         self.mortarNP.setScale(.5)
-        M = self.mortarNP
-        M.reparentTo(self.mortarNode)
-        M.setPythonTag("owner", self)
-        M.setPos(parent.actor,0,1,0)
-        M.setHpr(parent.actor,0,0,0)
+        self.M = self.mortarNP
+        self.M.reparentTo(self.mortarNode)
+        self.M.setPythonTag("owner", self)
+        self.M.setPos(player.actor,2,0,3)
+        self.M.setHpr(player.actor,0,0,0)
         
         #Setup Collision
         #mortar
         self.mortarTrav = CollisionTraverser()
         self.mortarTrav.showCollisions(render)
-        self.mortarHandler = CollisionHandlerEvent()
-        self.mortarSphere = CollisionSphere(0,0,0,1)
+        self.mortarHandler = CollisionHandlerQueue()
+        self.mortarSphere = CollisionSphere(0,0,0,2)
         self.mortarColNode = CollisionNode("mortar")
         self.mortarColNode.addSolid(self.mortarSphere)
         self.mortarColNode.setIntoCollideMask(BitMask32.allOff())
         self.mortarColNode.setFromCollideMask(BitMask32.bit(5))
-        self.mortarColNodePath = M.attachNewNode(self.mortarColNode)
+        self.mortarColNodePath = self.M.attachNewNode(self.mortarColNode)
         self.mortarColNodePath.setName("mortar")
         self.mortarColNodePath.show()
         self.mortarTrav.addCollider(self.mortarColNodePath, self.mortarHandler)
         #messenger.toggleVerMose()
         self.xSpeed = 30.0
         self.zSpeed = 20.0
+        self.zSpeeddec = 0.5
         self.deleteMe = 0
         self.damage = 12
+        self.destroyed = False
         #tmaxLife is created var, we need it so mortars dont go on forever
 
         
-        self.trajectory = ProjectileInterval(M, startPos =  M.getPos(), startVel = (self.xSpeed,0,self.zSpeed), duration = 10)
-        self.trajectory.start()
         
-        
-        taskMgr.add(self.traverseAll, "traverseAll")
+        taskMgr.add(self.move, "MortarMove", extraArgs = [game])
+        taskMgr.add(self.traverseAll, "traverseAll", extraArgs=[game])
             
             
-    def traverseAll(self, task):
-        self.mortarTrav.traverse(render)
+    def traverseAll(self, game):
+        if not game.paused:
+            self.mortarTrav.traverse(render)
+        return Task.cont
+        
+    def move(self, game):
+        if not game.paused:
+            self.M.setX(self.M, self.xSpeed * globalClock.getDt())
+            self.M.setZ(self.M, self.zSpeed * globalClock.getDt())
+            self.zSpeed -= self.zSpeeddec
+            self.m_entries = []
+            for i in range(self.mortarHandler.getNumEntries()):
+                entry = self.mortarHandler.getEntry(i)
+                if entry.getIntoNode().getName() == "fence_c" or entry.getIntoNode().getName() =="terrain" or entry.getIntoNode().getName() =="debris" or entry.getIntoNode().getName() =="Enemy":
+                    self.m_entries.append(entry)
+            if len(self.m_entries) > 0:
+                self.destroyMe(game)
+                return Task.done
         return Task.cont
 
 
-    def destroyMe(self, x):
+    def destroyMe(self, game):
+        game.explosions_handler.Mortar_Explosion(self.M.getPos())
         self.mortarNP.clearPythonTag("owner")
         self.mortarNode.removeNode()
+        self.destroyed = True 
+        del self
+        
