@@ -156,17 +156,21 @@ class Enemy1(object):
         h2 = self.actor.getH()
         self.actor.setH(h1)
         hpr = self.actor.getHpr()
-        h = math.fabs(math.fabs(h1 - h2) - 180)
+        h = math.fabs(h1 - h2) - 180
         
         # Firing angle and fire rate code
-        if h < 15 and self.timer <= 0:
+        if math.fabs(h) < 15 and self.timer <= 0:
             ## Put firing code here
+            print h
             b1 = bullets.Bullet(self)
             b2 = bullets.Bullet(self)
             b3 = bullets.Bullet(self)
-            b1.bulletNP.setHpr(hpr)
-            b2.bulletNP.setHpr(hpr)
-            b3.bulletNP.setHpr(hpr)
+            b1.bulletNP.setZ(2)
+            b2.bulletNP.setZ(2)
+            b3.bulletNP.setZ(2)
+            b1.bulletNP.setH(self.actor.getH() + h)
+            b2.bulletNP.setH(self.actor.getH() + h)
+            b3.bulletNP.setH(self.actor.getH() + h)
             self.timer = self.fire_rate
         else:
             self.timer -= 1
