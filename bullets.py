@@ -13,7 +13,7 @@ import sys, math, random
 #temporary - variables need to be changed
 
 class Bullet():
-    def __init__(self, parent, shotgun = False):
+    def __init__(self, parent, game, shotgun = False):
         random.seed()
         self.parent = parent
         self.bulletNode = render.attachNewNode("bullet")
@@ -71,26 +71,28 @@ class Bullet():
         self.maxLife = self.distance / self.speed
         self.life = 0.00001  
         
-        taskMgr.add(self.traverseAll, "traverseAll")
-        taskMgr.add(self.move, "move", uponDeath=self.destroyMe)
+        taskMgr.add(self.traverseAll, "traverseAll",extraArgs=[game])
+        taskMgr.add(self.move, "move", extraArgs=[game],uponDeath=self.destroyMe)
         
         
-    def move(self, Task):
-        if self.deleteMe == 1:
-            return Task.done
+    def move(self, game):
+        if not game.paused:
+            if self.deleteMe == 1:
+                return Task.done
         
-        elif self.life > self.maxLife:
-            return Task.done
-        else:
-            #move bullet forward, dependant on delta time
-            B = self.bulletNP
-            self.dt = self.parent.dt
-            B.setX(B, self.dt * self.speed)
-            self.life += self.dt
-            return Task.cont
-            
-    def traverseAll(self, task):
-        self.bulletTrav.traverse(render)
+            elif self.life > self.maxLife:
+                return Task.done
+            else:
+                #move bullet forward, dependant on delta time
+                B = self.bulletNP
+                self.dt = self.parent.dt
+                B.setX(B, self.dt * self.speed)
+                self.life += self.dt
+        return Task.cont
+                
+    def traverseAll(self, game):
+        if not game.paused:
+            self.bulletTrav.traverse(render)
         return Task.cont
 
 

@@ -4,15 +4,17 @@
   "maya2egg2012 -a model -o ground.egg temp_terrain.mb"
 }
 <Texture> lambert2SG {
-  "ground.jpg"
+  "../../../../../Desktop/images/in the base.jpg"
   <Scalar> wrapu { repeat }
   <Scalar> wrapv { repeat }
   <Scalar> minfilter { linear_mipmap_linear }
   <Scalar> magfilter { linear }
 }
-
-  <Group> terrain {
-	<Collide> { Polyset keep descend }
+<Group> temp_terrain {
+  <Dart> { 1 }
+  <Group> groundPlane_transform {
+  }
+  <Group> pPlane1 {
     <VertexPool> pPlaneShape1.verts {
       <Vertex> 0 {
         -281.98 -0.0893599 305.16
@@ -4684,4 +4686,4 @@
   }
   <Group> softMod11Handle {
   }
-
+}

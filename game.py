@@ -159,7 +159,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         #ambient light
         self.ambientLight = AmbientLight("ambientLight")
         #four values, RGBA (alpha is largely irrelevent), value range is 0:1
-        self.ambientLight.setColor((.01, .01, .01, 0.1))
+        self.ambientLight.setColor((.5, .5, .4, 1))
         self.ambientLightNP = render.attachNewNode(self.ambientLight)
         #the nodepath that calls setLight is what gets illuminated by the light
         render.setLight(self.ambientLightNP)
@@ -170,11 +170,12 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.keyLightNP = render.attachNewNode(self.keyLight)
         self.keyLightNP.setHpr(0, -26, 0)
         render.setLight(self.keyLightNP)
+        """
         self.fillLight = DirectionalLight("fillLight")
         self.fillLight.setColor((.4,.4,.4, 1))
         self.fillLightNP = render.attachNewNode(self.fillLight)
         self.fillLightNP.setHpr(30, 0, 0)
-        render.setLight(self.fillLightNP)    
+        render.setLight(self.fillLightNP)    """
         
         
     def setupCollisions(self):
