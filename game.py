@@ -99,21 +99,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.cghandler = CollisionHandlerQueue()
         self.cTrav.addCollider(self.cgcolnp, self.cghandler)
         
-        #test enemy
-        base.enemiez = render.attachNewNode("enemiez")
-        enemyNode = base.enemiez.attachNewNode("enemy")
-        enemy = loader.loadModel("models/ball")
-        enemy.reparentTo(render)
-        enemy.setPythonTag("owner", self)
-        enemy.setPos(0,-10,1.5)
-        
-        enemySphere = CollisionSphere(0,0,0,2)
-        enemyColNode = CollisionNode("enemy")
-        enemyColNode.addSolid(enemySphere)
-        enemyColNode.setCollideMask(BitMask32.bit(5))
-        enemyColNodePath = enemy.attachNewNode(enemyColNode)
-        enemyColNodePath.setName("enemy")
-        enemyColNodePath.show()
+
         
    
         self.paused = False
@@ -199,7 +185,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         print "Spawning Wave!"
         task.delayTime = self.wavetimer
         for i in range(5):
-            self.newEnemy = enemies.Enemy1(self,random.choice(self.spawnlocs))	
+            self.newEnemy = enemies.Enemy1(self,random.choice(self.spawnlocs))    
             self.enemies.append(self.newEnemy)
             self.AIworld.addAiChar(self.newEnemy.setupAI(self.player.actor))
         return task.again

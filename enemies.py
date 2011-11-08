@@ -6,18 +6,22 @@ from direct.actor.Actor import Actor #for animated models
 from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
 from panda3d.ai import * # AI logic
-import math
+import math,bullets
 
 #Class for each enemy, lot of (planned) variance, seemed easier than subclassing, feel free to change
 class Enemy1(object):
     def __init__(self,game,spawnloc = (0,0,0)):
         self.health = 20
         self.value = 10
+        self.maxspeed = 5
         
         # Load the enemy model and set the initial position of it
         self.loadModel()
         self.actor.setPos(spawnloc)
         self.enemy_start_pos = spawnloc
+        
+        #Set the clock stuff
+        self.dt = globalClock.getDt()
         
         # Enemy Rays
         self.ralphGroundRay = CollisionRay()
@@ -39,13 +43,13 @@ class Enemy1(object):
         
         # Collision stuff for bullets
         #self.cTrav = CollisionTraverser()
-        #self.cHandler = CollisionHandlerEvent()
-        #self.cSphere = CollisionSphere(0,0,0, 2)
-        #self.cNode = CollisionNode("Enemy")
-        #self.cNode.addSolid(self.cSphere)
-        #self.cNodePath = self.actor.attachNewNode(self.cNode)
-        #self.cNodePath.show()
-        #self.cTrav.addCollider(self.cNodePath, self.cHandler)
+        self.cHandler = CollisionHandlerEvent()
+        self.cSphere = CollisionSphere(0,0,2, 4)
+        self.cNode = CollisionNode("Enemy")
+        self.cNodePath = self.actor.attachNewNode(self.cNode)
+        self.cNodePath.node().addSolid(self.cSphere)
+        self.cNodePath.show()
+        game.cTrav.addCollider(self.cNodePath, self.cHandler)
         
         #self.heightTask = taskMgr.add(self.updateHeight,'EnemyHeight',extraArgs=[game])
     
@@ -77,7 +81,7 @@ class Enemy1(object):
     def setupAI(self, target):
         """ Start the enemy's AI """
         self.target = target
-        self.AIchar = AICharacter("enemy",self.actor,100,0.05,5)
+        self.AIchar = AICharacter("enemy",self.actor,100,0.05,self.maxspeed)
         self.AIbehaviors = self.AIchar.getAiBehaviors()
         self.AIbehaviors.evade(self.target,2,10,1.0)
         self.AIbehaviors.pursue(self.target,1.0)
@@ -117,8 +121,8 @@ class Enemy1(object):
             entries.append(entry)
         entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(),
                                      x.getSurfacePoint(render).getZ()))
-        if (len(entries)>0) and (entries[0].getIntoNode().getName() == "terrain"):
-            self.actor.setZ(entries[0].getSurfacePoint(render).getZ())
+        if (len(entries)>1) and (entries[1].getIntoNode().getName() == "terrain"):
+            self.actor.setZ(entries[1].getSurfacePoint(render).getZ()+1)
         else:
             self.actor.setPos(startpos)
         self.actor.setHpr(self.actor.getH(),0,0)
@@ -151,15 +155,22 @@ class Enemy1(object):
         self.actor.lookAt(game.player.actor)
         h2 = self.actor.getH()
         self.actor.setH(h1)
+        hpr = self.actor.getHpr()
         h = math.fabs(math.fabs(h1 - h2) - 180)
         
         # Firing angle and fire rate code
         if h < 15 and self.timer <= 0:
             ## Put firing code here
+            b1 = bullets.Bullet(self)
+            b2 = bullets.Bullet(self)
+            b3 = bullets.Bullet(self)
+            b1.bulletNP.setHpr(hpr)
+            b2.bulletNP.setHpr(hpr)
+            b3.bulletNP.setHpr(hpr)
             self.timer = self.fire_rate
         else:
             self.timer -= 1
-    
+        
     def die(self):
         taskMgr.remove(self.heightTask)
         
