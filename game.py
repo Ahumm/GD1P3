@@ -108,8 +108,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         
         # Set the enemy spawn points and frequenct of spawns
         self.wavetimer = 30
-        self.spawnlocs = [(30,30,0),( 30,-30,0),(-30,30,0),(-30,-30,0),
-                          (30, 0,0),(-30,  0,0),(  0,30,0),(  0,-30,0)]
+        self.spawnlocs = [(-1,-30,0),(3,30,0),(-13,2,0),(13,0,0)]#
         
         self.spawnTask = taskMgr.doMethodLater(2,self.spawnEnemies,'spawnTask')
         
