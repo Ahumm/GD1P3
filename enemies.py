@@ -23,6 +23,8 @@ class Enemy1(object):
         #Set the clock stuff
         self.dt = globalClock.getDt()
         
+        self.cTrav = CollisionTraverser()
+        
         # Enemy Rays
         self.ralphGroundRay = CollisionRay()
         self.ralphGroundRay.setOrigin(0,0,100)
@@ -33,7 +35,7 @@ class Enemy1(object):
         self.ralphGroundCol.setIntoCollideMask(BitMask32.allOff())
         self.ralphGroundColNp = self.actor.attachNewNode(self.ralphGroundCol)
         self.ralphGroundHandler = CollisionHandlerQueue()
-        game.cTrav.addCollider(self.ralphGroundColNp, self.ralphGroundHandler)
+        self.cTrav.addCollider(self.ralphGroundColNp, self.ralphGroundHandler)
         self.ralphGroundColNp.show()
         
         self.pursue_start = False
@@ -44,12 +46,12 @@ class Enemy1(object):
         # Collision stuff for bullets
         #self.cTrav = CollisionTraverser()
         self.cHandler = CollisionHandlerQueue()
-        self.cSphere = CollisionSphere(0,0,2, 4)
+        self.cSphere = CollisionSphere(0,0,2, 8)
         self.cNode = CollisionNode("Enemy")
         self.cNodePath = self.actor.attachNewNode(self.cNode)
         self.cNodePath.node().addSolid(self.cSphere)
         self.cNodePath.show()
-        game.cTrav.addCollider(self.cNodePath, self.cHandler)
+        self.cTrav.addCollider(self.cNodePath, self.cHandler)
         
         #self.heightTask = taskMgr.add(self.updateHeight,'EnemyHeight',extraArgs=[game])
     
@@ -69,9 +71,8 @@ class Enemy1(object):
         return 0
         
     def loadModel(self):
-        self.actor = Actor("models/ralph",
-                                {"run":"models/ralph-run",
-                                 "walk":"models/ralph-walk"})
+        self.actor = Actor("models/tank")
+        self.actor.setH(self.actor.getH() - 180)
         self.actor.reparentTo(render)
         self.actor.setScale(0.2)
         
@@ -115,37 +116,44 @@ class Enemy1(object):
         startpos = self.actor.getPos()
         self.updateAI(game)
         self.fire(game)
+        self.cTrav.traverse(render)
         entries = []
         for i in range(self.ralphGroundHandler.getNumEntries()):
             entry = self.ralphGroundHandler.getEntry(i)
-            entries.append(entry)
+            if entry.getIntoNode().getName() != "Enemy":
+                entries.append(entry)
         entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(),
                                      x.getSurfacePoint(render).getZ()))
-        if (len(entries)>1) and (entries[1].getIntoNode().getName() == "terrain"):
-            self.actor.setZ(entries[1].getSurfacePoint(render).getZ()+1)
+        if (len(entries)>0) and (entries[0].getIntoNode().getName() == "terrain"):
+            self.actor.setZ(entries[0].getSurfacePoint(render).getZ()+0.5)
+            startpos = self.actor.getPos()
         else:
             self.actor.setPos(startpos)
+        
+        
+        
         self.actor.setHpr(self.actor.getH(),0,0)
+        self.actor.setH(self.actor.getH() - 180)
         
         # Check boundaries
-        b_entries = []
         for i in range(self.cHandler.getNumEntries()):
             entry = self.cHandler.getEntry(i)
-            if entry.getIntoNode().getName() == "fence_c" or "debris":
+            if entry.getIntoNode().getName() == "fence_c" or entry.getIntoNode().getName() == "debris":
                 self.actor.setPos(startpos)
         
         # Keep enemy within bounds (HACK)
-        if self.actor.getX() > 50:
-            self.actor.setPos(50,self.actor.getY(),self.actor.getZ())
-        if self.actor.getX() < -50:
-            self.actor.setPos(-50,self.actor.getY(),self.actor.getZ())
-        if self.actor.getY() < -50:
-            self.actor.setPos(self.actor.getX(),-50,self.actor.getZ())
-        if self.actor.getX() > 50:
-            self.actor.setPos(self.actor.getX(),50,self.actor.getZ())
-        
+        edge = 43
+        if self.actor.getX() > edge:
+            self.actor.setPos(edge,self.actor.getY(),self.actor.getZ())
+        if self.actor.getX() < -edge:
+            self.actor.setPos(-edge,self.actor.getY(),self.actor.getZ())
+        if self.actor.getY() < -edge:
+            self.actor.setPos(self.actor.getX(),-edge,self.actor.getZ())
+        if self.actor.getY() > edge:
+            self.actor.setPos(self.actor.getX(),edge,self.actor.getZ())
+            
         return Task.cont
-    
+        
     #AI Controls
     def pause_e(self):
         self.AIbehaviors.pauseAi("pursue")
