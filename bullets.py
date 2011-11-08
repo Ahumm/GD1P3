@@ -13,17 +13,29 @@ import sys, math, random
 #temporary - variables need to be changed
 
 class Bullet():
-    def __init__(self, parent):
-    
+    def __init__(self, parent, game, shotgun = False):
+        random.seed()
         self.parent = parent
         self.bulletNode = render.attachNewNode("bullet")
         self.bulletNP = loader.loadModel("models/ball")
-        self.bulletNP.setScale(.25)
-        B = self.bulletNP
-        B.reparentTo(self.bulletNode)
-        B.setPythonTag("owner", self)
-        B.setPos(parent.actor,0,1,0)
-        B.setHpr(parent.actor,0,0,0)
+        if not shotgun:
+            self.bulletNP.setScale(.25)
+            B = self.bulletNP
+            B.reparentTo(self.bulletNode)
+            B.setPythonTag("owner", self)
+            self.offset = random.uniform(-0.5,0.5)
+            print str(self.offset)
+            B.setPos(parent.actor,4+self.offset,2*self.offset,2*self.offset)
+            B.setHpr(parent.actor,0,0,0)
+        if shotgun:
+            self.bulletNP.setScale(.10)
+            B = self.bulletNP
+            self.offset = random.uniform(-2,2)
+            print str(self.offset)
+            B.reparentTo(self.bulletNode)
+            B.setPythonTag("owner", self)
+            B.setPos(parent.actor,4+self.offset,2*self.offset, self.offset)
+            B.setHpr(parent.actor,0,0,0)
         
         #Setup Collision
         #Bullet
@@ -36,40 +48,58 @@ class Bullet():
         self.bulletColNode.setIntoCollideMask(BitMask32.allOff())
         self.bulletColNode.setFromCollideMask(BitMask32.bit(5))
         self.bulletColNodePath = B.attachNewNode(self.bulletColNode)
-        self.bulletColNodePath.setName("bullet")
+        if shotgun:
+            self.bulletColNodePath.setName("shotgun_bullet")
+        else:
+            self.bulletColNodePath.setName("bullet")
         self.bulletColNodePath.show()
         self.bulletTrav.addCollider(self.bulletColNodePath, self.bulletHandler)
         #messenger.toggleVerbose()
         
         #vars like speed, damage, distance will be passed to some method later
+<<<<<<< HEAD
         self.speed = 100.0
         self.distance = 50.0
         self.deleteMe = 0
         self.damage = 12
+=======
+        if shotgun:
+            self.speed = 400
+            self.distance = 40.0
+            self.deleteMe = 0
+            self.damage = 8
+        else:
+            self.speed = 280
+            self.distance = 70.0
+            self.deleteMe = 0
+            self.damage = 12
+>>>>>>> 04ebe527016305066d443809c7362feba3607b7e
         #tmaxLife is created var, we need it so bullets dont go on forever
         self.maxLife = self.distance / self.speed
         self.life = 0.00001  
         
-        taskMgr.add(self.traverseAll, "traverseAll")
-        taskMgr.add(self.move, "move", uponDeath=self.destroyMe)
+        taskMgr.add(self.traverseAll, "traverseAll",extraArgs=[game])
+        taskMgr.add(self.move, "move", extraArgs=[game],uponDeath=self.destroyMe)
         
         
-    def move(self, Task):
-        if self.deleteMe == 1:
-            return Task.done
+    def move(self, game):
+        if not game.paused:
+            if self.deleteMe == 1:
+                return Task.done
         
-        elif self.life > self.maxLife:
-            return Task.done
-        else:
-            #move bullet forward, dependant on delta time
-            B = self.bulletNP
-            self.dt = self.parent.dt
-            B.setX(B, self.dt * self.speed)
-            self.life += self.dt
-            return Task.cont
-            
-    def traverseAll(self, task):
-        self.bulletTrav.traverse(render)
+            elif self.life > self.maxLife:
+                return Task.done
+            else:
+                #move bullet forward, dependant on delta time
+                B = self.bulletNP
+                self.dt = self.parent.dt
+                B.setX(B, self.dt * self.speed)
+                self.life += self.dt
+        return Task.cont
+                
+    def traverseAll(self, game):
+        if not game.paused:
+            self.bulletTrav.traverse(render)
         return Task.cont
 
 

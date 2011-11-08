@@ -25,7 +25,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         
         
         # Mapping some keys
-        self.keyMap = {"left":0, "right":0, "forward":0, "back":0, "shoot":0}
+        self.keyMap = {"left":0, "right":0, "forward":0, "back":0, "shoot":0, "rot_left":0, "rot_right":0}
         self.accept("escape", self.pause)
         self.accept("space", self.setKey, ["shoot", 1])
         self.accept("space-up",self.setKey, ["shoot", 0])
@@ -38,6 +38,10 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.accept("d", self.setKey, ["right", 1])
         self.accept("a", self.setKey, ["left", 1])
         self.accept("s", self.setKey, ["back",1])
+        self.accept("arrow_left", self.setKey, ["rot_left",1])
+        self.accept("arrow_left-up", self.setKey, ["rot_left",0])
+        self.accept("arrow_right", self.setKey, ["rot_right",1])
+        self.accept("arrow_right-up", self.setKey, ["rot_right", 0])
         self.accept("mouse1", self.setKey, ["fire", True])
         self.accept("w-up", self.setKey, ["forward", 0])
         self.accept("d-up", self.setKey, ["right", 0])
@@ -95,30 +99,18 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.cghandler = CollisionHandlerQueue()
         self.cTrav.addCollider(self.cgcolnp, self.cghandler)
         
-        #test enemy
-        base.enemiez = render.attachNewNode("enemiez")
-        enemyNode = base.enemiez.attachNewNode("enemy")
-        enemy = loader.loadModel("models/ball")
-        enemy.reparentTo(render)
-        enemy.setPythonTag("owner", self)
-        enemy.setPos(0,-10,1.5)
-        
-        enemySphere = CollisionSphere(0,0,0,2)
-        enemyColNode = CollisionNode("enemy")
-        enemyColNode.addSolid(enemySphere)
-        enemyColNode.setCollideMask(BitMask32.bit(5))
-        enemyColNodePath = enemy.attachNewNode(enemyColNode)
-        enemyColNodePath.setName("enemy")
-        enemyColNodePath.show()
+
         
    
         self.paused = False
         self.setAI()
         
-        for i in range(5):    
-            self.newEnemy = enemies.Enemy1(self)	
-            self.enemies.append(self.newEnemy)
-            self.AIworld.addAiChar(self.newEnemy.setupAI(self.player.actor))
+        # Set the enemy spawn points and frequenct of spawns
+        self.wavetimer = 30
+        self.spawnlocs = [(30,30,0),( 30,-30,0),(-30,30,0),(-30,-30,0),
+                          (30, 0,0),(-30,  0,0),(  0,30,0),(  0,-30,0)]
+        
+        self.spawnTask = taskMgr.doMethodLater(2,self.spawnEnemies,'spawnTask')
         
         #self.explosions_handler = explosions.Explosions_Manager()
         
@@ -153,7 +145,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         #ambient light
         self.ambientLight = AmbientLight("ambientLight")
         #four values, RGBA (alpha is largely irrelevent), value range is 0:1
-        self.ambientLight.setColor((.01, .01, .01, 0.1))
+        self.ambientLight.setColor((.5, .5, .4, 1))
         self.ambientLightNP = render.attachNewNode(self.ambientLight)
         #the nodepath that calls setLight is what gets illuminated by the light
         render.setLight(self.ambientLightNP)
@@ -164,11 +156,12 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.keyLightNP = render.attachNewNode(self.keyLight)
         self.keyLightNP.setHpr(0, -26, 0)
         render.setLight(self.keyLightNP)
+        """
         self.fillLight = DirectionalLight("fillLight")
         self.fillLight.setColor((.4,.4,.4, 1))
         self.fillLightNP = render.attachNewNode(self.fillLight)
         self.fillLightNP.setHpr(30, 0, 0)
-        render.setLight(self.fillLightNP)    
+        render.setLight(self.fillLightNP)    """
         
         
     def setupCollisions(self):
@@ -184,26 +177,27 @@ class World(DirectObject): #subclassing here is necessary to accept events
         """ Set up The AI world"""
         # Create the world
         self.AIworld = AIWorld(render)
-        
-        # Example from the Panda3D manual:
-            # Make the AI character
-            #self.AIchar = AICharacter("seeker",self.seeker, 100, 0.05, 5)
-            # Add the character to the world
-            #self.AIworld.addAiChar(self.AIchar)
-            # Get the possible AI behaviors
-            #self.AIbehaviors = self.AIchar.getAiBehaviors()
-            # Set the character's behavior
-            #self.AIbehaviors.seek(self.target)
-            # Run it
-            #self.seeker.loop("run")
-        
+
         # Add the AIworld updater
         taskMgr.add(self.AIUpdate, "AIUpdate")
-        
+    
+    def spawnEnemies(self,task):
+        print "Spawning Wave!"
+        task.delayTime = self.wavetimer
+        if not self.paused:
+            for i in range(5):
+                if len(self.enemies) < 1:
+                    self.newEnemy = enemies.Enemy1(self,random.choice(self.spawnlocs))	
+                    self.enemies.append(self.newEnemy)
+                    self.AIworld.addAiChar(self.newEnemy.setupAI(self.player.actor))
+        return task.again
+    
     def AIUpdate(self,task):
         """ Update the AIWorld """
-        #print self.enemies[0].distanceToTarget()
-        self.AIworld.update()
+        if not self.paused:
+            self.AIworld.update()
+            for e in self.enemies:
+                e.updateHeight(self)
         return Task.cont
     
     def resume_game(self):
