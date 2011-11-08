@@ -97,24 +97,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.cgcol.setIntoCollideMask(BitMask32.allOff())
         self.cgcolnp = camera.attachNewNode(self.cgcol)
         self.cghandler = CollisionHandlerQueue()
-        self.cTrav.addCollider(self.cgcolnp, self.cghandler)
-        
-        #test enemy
-        base.enemiez = render.attachNewNode("enemiez")
-        enemyNode = base.enemiez.attachNewNode("enemy")
-        enemy = loader.loadModel("models/ball")
-        enemy.reparentTo(render)
-        enemy.setPythonTag("owner", self)
-        enemy.setPos(0,-10,1.5)
-        
-        enemySphere = CollisionSphere(0,0,0,2)
-        enemyColNode = CollisionNode("enemy")
-        enemyColNode.addSolid(enemySphere)
-        enemyColNode.setCollideMask(BitMask32.bit(5))
-        enemyColNodePath = enemy.attachNewNode(enemyColNode)
-        enemyColNodePath.setName("enemy")
-        enemyColNodePath.show()
-        
+        self.cTrav.addCollider(self.cgcolnp, self.cghandler)       
    
         self.paused = False
         self.setAI()

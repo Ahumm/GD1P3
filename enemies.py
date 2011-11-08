@@ -13,6 +13,7 @@ class Enemy1(object):
     def __init__(self,game,spawnloc = (0,0,0)):
         self.health = 20
         self.value = 10
+        self.maxspeed = 5
         
         # Load the enemy model and set the initial position of it
         self.loadModel()
@@ -80,7 +81,7 @@ class Enemy1(object):
     def setupAI(self, target):
         """ Start the enemy's AI """
         self.target = target
-        self.AIchar = AICharacter("enemy",self.actor,100,0.05,5)
+        self.AIchar = AICharacter("enemy",self.actor,100,0.05,self.maxspeed)
         self.AIbehaviors = self.AIchar.getAiBehaviors()
         self.AIbehaviors.evade(self.target,2,10,1.0)
         self.AIbehaviors.pursue(self.target,1.0)
@@ -152,9 +153,9 @@ class Enemy1(object):
         # Get the angle between current heading and that looking directly at the player
         h1 = self.actor.getH()
         self.actor.lookAt(game.player.actor)
-        hpr = self.actor.getHpr()
         h2 = self.actor.getH()
         self.actor.setH(h1)
+        hpr = self.actor.getHpr()
         h = math.fabs(math.fabs(h1 - h2) - 180)
         
         # Firing angle and fire rate code
