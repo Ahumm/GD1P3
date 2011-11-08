@@ -57,12 +57,10 @@ class Bullet():
         #messenger.toggleVerbose()
         
         #vars like speed, damage, distance will be passed to some method later
-<<<<<<< HEAD
         self.speed = 100.0
         self.distance = 50.0
         self.deleteMe = 0
         self.damage = 12
-=======
         if shotgun:
             self.speed = 400
             self.distance = 40.0
@@ -73,7 +71,6 @@ class Bullet():
             self.distance = 70.0
             self.deleteMe = 0
             self.damage = 12
->>>>>>> 04ebe527016305066d443809c7362feba3607b7e
         #tmaxLife is created var, we need it so bullets dont go on forever
         self.maxLife = self.distance / self.speed
         self.life = 0.00001  
