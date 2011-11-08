@@ -20,6 +20,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         #turn off mouse control, otherwise camera is not repositionable
         base.disableMouse()
         #camera.setPosHpr(0, -15, 7, 0, -15, 0)
+        #self.update()
         self.setupLights()
         render.setShaderAuto() #you probably want to use this
         
@@ -52,7 +53,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
 
         # Empty lists to track stuff
         self.enemies = []
-        #self.bullets = []
+        self.bullets = []
         self.mortars = []
         
         
@@ -114,6 +115,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         
         #self.explosions_handler = explosions.Explosions_Manager()
         
+        taskMgr.add(self.update, "update")
         taskMgr.add(self.player_shoot, "Shoot")
         
     def create_explosion(self):
@@ -163,11 +165,6 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.fillLightNP.setHpr(30, 0, 0)
         render.setLight(self.fillLightNP)    """
         
-        
-    def setupCollisions(self):
-        #base.bullets = render.attachNewNode("bullets")
-        pass
-        
     def pause(self):
         self.paused = True
         self.resume_button = DirectButton(text = ("Resume"), scale = 0.25, command = self.resume_game, pos=(0, 0, 0.4))
@@ -214,4 +211,22 @@ class World(DirectObject): #subclassing here is necessary to accept events
             self.resume_button.removeNode()
         if self.exit_button:
             self.exit_button.removeNode()
+            
+    def update(self, task):
+        print "HEALTH: " + str(self.player.health)
+        if self.player.selected_weapon == "SMG":
+            print "WEAPON: " + str(self.player.selected_weapon)
+            print "SMG MAG: " + str(self.player.smg_mag)
+            print "SMG RELOAD TIME: " + str(self.player.smg_reload_time)
+        elif self.player.selected_weapon == "Shotgun":
+            print "WEAPON: " + str(self.player.selected_weapon)
+            print "SHOTGUN MAG: " + str(self.player.shotgun_mag)
+            print "SHOTGUN RELOAD TIME: " + str(self.player.shotgun_reload_time)
+        else:
+            print "WEAPON: " + str(self.player.selected_weapon)
+            print "MORTAR MAG: " + str(self.player.mortar_mag)
+            print "MORTAR RELOAD TIME: " + str(self.player.mortar_load_time)
+        if self.pause == True:
+            print "PAUSED"
+        return task.cont
             
