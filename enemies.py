@@ -6,7 +6,7 @@ from direct.actor.Actor import Actor #for animated models
 from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
 from panda3d.ai import * # AI logic
-import math
+import math,bullets
 
 #Class for each enemy, lot of (planned) variance, seemed easier than subclassing, feel free to change
 class Enemy1(object):
@@ -18,6 +18,9 @@ class Enemy1(object):
         self.loadModel()
         self.actor.setPos(spawnloc)
         self.enemy_start_pos = spawnloc
+        
+        #Set the clock stuff
+        self.dt = globalClock.getDt()
         
         # Enemy Rays
         self.ralphGroundRay = CollisionRay()
@@ -39,13 +42,13 @@ class Enemy1(object):
         
         # Collision stuff for bullets
         #self.cTrav = CollisionTraverser()
-        #self.cHandler = CollisionHandlerEvent()
+        self.cHandler = CollisionHandlerEvent()
         self.cSphere = CollisionSphere(0,0,2, 4)
         self.cNode = CollisionNode("Enemy")
         self.cNodePath = self.actor.attachNewNode(self.cNode)
         self.cNodePath.node().addSolid(self.cSphere)
         self.cNodePath.show()
-        #self.cTrav.addCollider(self.cNodePath, self.cHandler)
+        game.cTrav.addCollider(self.cNodePath, self.cHandler)
         
         #self.heightTask = taskMgr.add(self.updateHeight,'EnemyHeight',extraArgs=[game])
     
@@ -117,8 +120,8 @@ class Enemy1(object):
             entries.append(entry)
         entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(),
                                      x.getSurfacePoint(render).getZ()))
-        if (len(entries)>0) and (entries[1].getIntoNode().getName() == "terrain"):
-            self.actor.setZ(entries[1].getSurfacePoint(render).getZ())
+        if (len(entries)>1) and (entries[1].getIntoNode().getName() == "terrain"):
+            self.actor.setZ(entries[1].getSurfacePoint(render).getZ()+1)
         else:
             self.actor.setPos(startpos)
         self.actor.setHpr(self.actor.getH(),0,0)
@@ -149,6 +152,7 @@ class Enemy1(object):
         # Get the angle between current heading and that looking directly at the player
         h1 = self.actor.getH()
         self.actor.lookAt(game.player.actor)
+        hpr = self.actor.getHpr()
         h2 = self.actor.getH()
         self.actor.setH(h1)
         h = math.fabs(math.fabs(h1 - h2) - 180)
@@ -156,10 +160,16 @@ class Enemy1(object):
         # Firing angle and fire rate code
         if h < 15 and self.timer <= 0:
             ## Put firing code here
+            b1 = bullets.Bullet(self)
+            b2 = bullets.Bullet(self)
+            b3 = bullets.Bullet(self)
+            b1.bulletNP.setHpr(hpr)
+            b2.bulletNP.setHpr(hpr)
+            b3.bulletNP.setHpr(hpr)
             self.timer = self.fire_rate
         else:
             self.timer -= 1
-    
+        
     def die(self):
         taskMgr.remove(self.heightTask)
         
