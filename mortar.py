@@ -8,6 +8,7 @@ from direct.task import Task #for update functions
 from direct.gui.DirectGui import * #for buttons and stuff
 from panda3d.ai import * # AI logic
 from pandac.PandaModules import Vec3
+from direct.stdpy.threading import Timer
 import sys, math, random
 
 #temporary - variaMles need to Me changed
@@ -40,36 +41,19 @@ class Mortar():
         self.mortarColNodePath.show()
         self.mortarTrav.addCollider(self.mortarColNodePath, self.mortarHandler)
         #messenger.toggleVerMose()
-        
-        #vars like speed, damage, distance will Me passed to some method later
-        self.speed = 40.0
-        self.distance = 20.0
+        self.xSpeed = 30.0
+        self.zSpeed = 20.0
         self.deleteMe = 0
         self.damage = 12
         #tmaxLife is created var, we need it so mortars dont go on forever
-        self.maxLife = self.distance / self.speed
-        self.life = 0.0001  
+
+        
+        self.trajectory = ProjectileInterval(M, startPos =  M.getPos(), startVel = (self.xSpeed,0,self.zSpeed), duration = 10)
+        self.trajectory.start()
+        
         
         taskMgr.add(self.traverseAll, "traverseAll")
-        taskMgr.add(self.move, "move", uponDeath=self.destroyMe)
-        
-        
-    def move(self, Task):
-        if self.deleteMe == 1:
-            return Task.done
-        
-        elif self.life > self.maxLife:
-            return Task.done
-        else:
-            #move mortar forward, dependant on delta time
-            M = self.mortarNP
-            self.dt = self.parent.dt
-            M.setX(M, self.dt * self.speed)
-            M.setZ(M, self.dt * self.speed)
-            if(self.dt == self.parent.dt + 5):
-                M.setZ(M,self.dt / self.speed)
-            self.life += self.dt
-            return Task.cont
+            
             
     def traverseAll(self, task):
         self.mortarTrav.traverse(render)
