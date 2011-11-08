@@ -224,7 +224,6 @@ class World(DirectObject): #subclassing here is necessary to accept events
             print "SHOTGUN RELOAD TIME: " + str(self.player.shotgun_reload_time)
         else:
             print "WEAPON: " + str(self.player.selected_weapon)
-            print "MORTAR MAG: " + str(self.player.mortar_mag)
             print "MORTAR RELOAD TIME: " + str(self.player.mortar_load_time)
         if self.pause == True:
             print "PAUSED"
