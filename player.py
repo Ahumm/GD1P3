@@ -25,6 +25,7 @@ class Player(DirectObject):
         self.mortar_loaded = True
         self.mortar_load_time = 240
         self.mortar_load_counter = 0
+        self.mortar_mag = 4
         self.smg_mag = 30
         self.smg_reload_time = 120
         self.smg_reload_counter = 0
@@ -178,7 +179,7 @@ class Player(DirectObject):
                 if self.mortar_loaded:
                     self.mortar_loaded = False
                     self.mortar_load_counter += self.mortar_load_time
-                    self.mortars -= 1
+                    self.mortar_mag -= 1
                     print "Mortar launched"
     
     def update_counters(self, game):
