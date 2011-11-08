@@ -135,7 +135,7 @@ class Player(DirectObject):
             
     def set_weapon(self, weapon):
         self.selected_weapon = weapon
-        print "Weapon is now " + weapon
+        
         
         
 
@@ -156,7 +156,7 @@ class Player(DirectObject):
                         self.smg_reload_counter +=self.smg_reload_time
                         self.smg_reloading = True
                         print "SMG reloading"
-            elif self.selected_weapon == "Shotgun":
+            elif self.selected_weapon == "SHOTGUN":
                 if self.shotgun_can_fire:
                     if self.shotgun_mag > 0:
                         self.shotgun_mag -= 1
@@ -173,7 +173,7 @@ class Player(DirectObject):
                         self.shotgun_reload_counter += self.shotgun_reload_time
                         self.shotgun_reloading = True
                         print "Shotgun reloading"
-            elif self.selected_weapon == "Mortar":
+            elif self.selected_weapon == "MORTAR":
                 if self.mortar_loaded:
                     self.mortar_loaded = False
                     self.mortar_load_counter += self.mortar_load_time
@@ -197,7 +197,7 @@ class Player(DirectObject):
                         self.smg_can_fire = True
                         print "SMG reloaded"
         
-            elif self.selected_weapon =="Shotgun":
+            elif self.selected_weapon =="SHOTGUN":
                 if not self.shotgun_can_fire and not self.shotgun_reloading:
                     if self.shotgun_fire_counter > 0:
                         self.shotgun_fire_counter -=1
@@ -212,7 +212,7 @@ class Player(DirectObject):
                         self.shotgun_can_fire = True
                         print "Shotgun reloaded"
                         
-            elif self.selected_weapon == "Mortar":
+            elif self.selected_weapon == "MORTAR":
                 if not self.mortar_loaded:
                     if self.mortar_load_counter > 0:
                         self.mortar_load_counter -= 1
