@@ -21,7 +21,7 @@ class Enemy1(object):
         self.enemy_start_pos = spawnloc
         
         #Set the clock stuff
-        self.dt = globalClock.getDt()
+        self.dt = game.player.dt
         
         self.cTrav = CollisionTraverser()
         
@@ -110,8 +110,6 @@ class Enemy1(object):
             
         self.resume_e()
             
-        #print "%s ::: %s ::: %s" % (self.AIbehaviors.behaviorStatus("pursue"),self.AIbehaviors.behaviorStatus("flee"),self.AIbehaviors.behaviorStatus("wander"))
-    
     def updateHeight(self,game):
         startpos = self.actor.getPos()
         self.updateAI(game)
@@ -130,8 +128,6 @@ class Enemy1(object):
         else:
             self.actor.setPos(startpos)
         
-        
-        
         self.actor.setHpr(self.actor.getH(),0,0)
         self.actor.setH(self.actor.getH() - 180)
         
@@ -141,7 +137,6 @@ class Enemy1(object):
             if entry.getIntoNode().getName() == "fence_c" or entry.getIntoNode().getName() == "debris":
                 self.actor.setPos(startpos)
                 
-        
         # Keep enemy within bounds (HACK)
         edge = 43
         if self.actor.getX() > edge:
@@ -171,21 +166,20 @@ class Enemy1(object):
         self.actor.lookAt(game.player.actor)
         h2 = self.actor.getH()
         h = math.fabs(h1 - h2) - 180
+        #print h1 - 180
+        #print h2
         
         # Firing angle and fire rate code
         if math.fabs(h) < 15 and self.timer <= 0:
-            self.actor.setH(self.actor.getH()-90)
             ## Put firing code here
-            #print hpr
             b1 = bullets.Bullet(self,game)
             b2 = bullets.Bullet(self,game)
             b3 = bullets.Bullet(self,game)
-            #b1.bulletNP.setZ(2)
-            #b2.bulletNP.setZ(2)
-            #b3.bulletNP.setZ(2)
-            #b1.bulletNP.setH(self.actor.getH() + h-90)
-            #b2.bulletNP.setH(self.actor.getH() + h-90)
-            #b3.bulletNP.setH(self.actor.getH() + h-90)
+            b1.bulletNP.setH(b1.bulletNP.getH() + 90)
+            b2.bulletNP.setH(b2.bulletNP.getH() + 90)
+            b3.bulletNP.setH(b3.bulletNP.getH() + 90)
+            print "B: %s" % str(b1.bulletNP.getH())
+            print "T: %s" % str(h2)
             self.timer = self.fire_rate
         else:
             self.timer -= 1
@@ -194,6 +188,7 @@ class Enemy1(object):
         
     def die(self):
         taskMgr.remove(self.heightTask)
+        self.actor.removeNode()
         
 class Enemy2(object):
     def __init__(self):
