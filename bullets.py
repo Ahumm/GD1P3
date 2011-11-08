@@ -57,6 +57,10 @@ class Bullet():
         #messenger.toggleVerbose()
         
         #vars like speed, damage, distance will be passed to some method later
+        self.speed = 100.0
+        self.distance = 50.0
+        self.deleteMe = 0
+        self.damage = 12
         if shotgun:
             self.speed = 400
             self.distance = 40.0

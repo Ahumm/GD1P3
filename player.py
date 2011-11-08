@@ -25,6 +25,7 @@ class Player(DirectObject):
         self.mortar_loaded = True
         self.mortar_load_time = 240
         self.mortar_load_counter = 0
+        self.mortar_mag = 4
         self.smg_mag = 30
         self.smg_reload_time = 120
         self.smg_reload_counter = 0
@@ -178,6 +179,7 @@ class Player(DirectObject):
                 if self.mortar_loaded:
                     self.mortar_loaded = False
                     self.mortar_load_counter += self.mortar_load_time
+                    self.mortar_mag -= 1
                     m = mortar.Mortar(self)
                     print "Mortar launched"
     
@@ -246,6 +248,10 @@ class Player(DirectObject):
                     self.x_vel = self.max_velocity
                 
             if game.keyMap["back"]:
+                self.actor.setX(self.actor, - 25 * globalClock.getDt())
+            if game.keyMap["fire"] == True:
+                self.last_shot_fired += self.dt
+                self.fire(game)
                 self.moving = True
                 self.x_vel -= self.acceleration
                 if self.x_vel < self.max_negative_velocity:
