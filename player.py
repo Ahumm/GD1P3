@@ -64,14 +64,14 @@ class Player(DirectObject):
         
         # Collision for bullets
         self.cTrav = CollisionTraverser()
-        self.cHandler = CollisionHandlerEvent()
+        self.cHandler = CollisionHandlerQueue()
         #self.cHandler.addInPattern("
-        self.cSphere = CollisionSphere(0,0,0, 2)
+        self.cSphere = CollisionSphere(0,0,0,6)
         self.cNode = CollisionNode("Player")
         self.cNode.addSolid(self.cSphere)
         self.cNodePath = self.actor.attachNewNode(self.cNode)
         self.cNodePath.show()
-        #self.cTrav.addCollider(self.cNodePath, self.cHandler)
+        self.cTrav.addCollider(self.cNodePath, self.cHandler)
         
         
         # Set Default Weapon
@@ -149,9 +149,9 @@ class Player(DirectObject):
                         self.smg_mag -= self.smg_burst_count
                         self.smg_fire_counter += self.smg_fire_rate
                         self.smg_can_fire = False
-                        b1 = bullets.Bullet(self)
-                        b2 = bullets.Bullet(self)
-                        b3 = bullets.Bullet(self)
+                        b1 = bullets.Bullet(self, game)
+                        b2 = bullets.Bullet(self, game)
+                        b3 = bullets.Bullet(self, game)
                         print "SMG fired 3 rounds, "+str(self.smg_mag)+" rounds remaining"
                     if self.smg_mag == 0:
                         self.smg_reload_counter +=self.smg_reload_time
@@ -163,12 +163,12 @@ class Player(DirectObject):
                         self.shotgun_mag -= 1
                         self.shotgun_fire_counter += self.shotgun_fire_rate
                         self.shotgun_can_fire = False
-                        b1 = bullets.Bullet(self, True)
-                        b2 = bullets.Bullet(self, True)
-                        b3 = bullets.Bullet(self, True)
-                        b4 = bullets.Bullet(self, True)
-                        b5 = bullets.Bullet(self, True)
-                        b6 = bullets.Bullet(self, True)
+                        b1 = bullets.Bullet(self,game, True)
+                        b2 = bullets.Bullet(self,game, True)
+                        b3 = bullets.Bullet(self, game,True)
+                        b4 = bullets.Bullet(self, game,True)
+                        b5 = bullets.Bullet(self,game, True)
+                        b6 = bullets.Bullet(self, game,True)
                         print "Shotgun fired, " + str(self.shotgun_mag)+" rounds remaining"
                     if self.shotgun_mag == 0:
                         self.shotgun_reload_counter += self.shotgun_reload_time
@@ -246,10 +246,6 @@ class Player(DirectObject):
                     self.x_vel = self.max_velocity
                 
             if game.keyMap["back"]:
-                self.actor.setX(self.actor, - 25 * globalClock.getDt())
-            if game.keyMap["fire"] == True:
-                self.last_shot_fired += self.dt
-                self.fire(game)
                 self.moving = True
                 self.x_vel -= self.acceleration
                 if self.x_vel < self.max_negative_velocity:
@@ -279,6 +275,7 @@ class Player(DirectObject):
             self.actor.setX(self.actor, self.x_vel * globalClock.getDt())
             # Check for terrain collisions
             game.cTrav.traverse(render)
+            self.cTrav.traverse(render)
             
             # Now update the player's Z coordinate, or don't move at all
             entries = []
@@ -291,6 +288,13 @@ class Player(DirectObject):
                 self.actor.setZ(entries[0].getSurfacePoint(render).getZ()+2)
             else:
                 self.actor.setPos(self.player_start_pos)
+                
+            # Check boundaries
+            b_entries = []
+            for i in range(self.cHandler.getNumEntries()):
+                entry = self.cHandler.getEntry(i)
+                if entry.getIntoNode().getName() == "fence_c" or "debris":
+                    self.actor.setPos(self.player_start_pos)
 
             
             # Bobbing when still

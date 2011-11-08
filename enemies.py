@@ -43,7 +43,7 @@ class Enemy1(object):
         
         # Collision stuff for bullets
         #self.cTrav = CollisionTraverser()
-        self.cHandler = CollisionHandlerEvent()
+        self.cHandler = CollisionHandlerQueue()
         self.cSphere = CollisionSphere(0,0,2, 4)
         self.cNode = CollisionNode("Enemy")
         self.cNodePath = self.actor.attachNewNode(self.cNode)
@@ -127,6 +127,13 @@ class Enemy1(object):
             self.actor.setPos(startpos)
         self.actor.setHpr(self.actor.getH(),0,0)
         
+        # Check boundaries
+        b_entries = []
+        for i in range(self.cHandler.getNumEntries()):
+            entry = self.cHandler.getEntry(i)
+            if entry.getIntoNode().getName() == "fence_c" or "debris":
+                self.actor.setPos(startpos)
+        
         # Keep enemy within bounds (HACK)
         if self.actor.getX() > 50:
             self.actor.setPos(50,self.actor.getY(),self.actor.getZ())
@@ -162,9 +169,9 @@ class Enemy1(object):
         if math.fabs(h) < 15 and self.timer <= 0:
             ## Put firing code here
             print h
-            b1 = bullets.Bullet(self)
-            b2 = bullets.Bullet(self)
-            b3 = bullets.Bullet(self)
+            b1 = bullets.Bullet(self,game)
+            b2 = bullets.Bullet(self,game)
+            b3 = bullets.Bullet(self,game)
             b1.bulletNP.setZ(2)
             b2.bulletNP.setZ(2)
             b3.bulletNP.setZ(2)
