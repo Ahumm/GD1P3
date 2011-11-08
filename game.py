@@ -7,6 +7,7 @@ from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
 from direct.gui.DirectGui import * #for buttons and stuff
 from panda3d.ai import * # AI logic
+from direct.gui.OnscreenText import OnscreenText
 import sys, math, random
 
 import player
@@ -23,6 +24,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         #self.update()
         self.setupLights()
         render.setShaderAuto() #you probably want to use this
+        self.cfont = loader.loadFont('Coalition_v2.ttf')
         
         
         # Mapping some keys
@@ -106,6 +108,9 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.paused = False
         self.setAI()
         
+        
+        self.hud_weapon = OnscreenText(text = "WEAPON: "+self.player.selected_weapon, pos = (0.75, -0.8), scale = 0.07, font = self.cfont, fg=(180,180,180,1))
+        
         # Set the enemy spawn points and frequenct of spawns
         self.wavetimer = 30
         self.spawnlocs = [(-1,-30,0),(3,30,0),(-13,2,0),(13,0,0)]#
@@ -117,6 +122,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         taskMgr.add(self.update, "update")
         taskMgr.add(self.player_shoot, "Shoot")
         
+        
     def create_explosion(self):
         self.explosions_handler.Small_Explosion(VBase3(0,0,3))
         
@@ -127,10 +133,10 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.player.set_weapon("SMG")
     
     def setShotgun(self):
-        self.player.set_weapon("Shotgun")
+        self.player.set_weapon("SHOTGUN")
         
     def setMortar(self):
-        self.player.set_weapon("Mortar")
+        self.player.set_weapon("MORTAR")
         
         
     def toggle_light(self):
@@ -182,8 +188,8 @@ class World(DirectObject): #subclassing here is necessary to accept events
         task.delayTime = self.wavetimer
         if not self.paused:
             for i in range(5):
-                if len(self.enemies) < 1:
-                    self.newEnemy = enemies.Enemy1(self,random.choice(self.spawnlocs))	
+                if len(self.enemies) < 11:
+                    self.newEnemy = enemies.Enemy1(self,random.choice(self.spawnlocs))    
                     self.enemies.append(self.newEnemy)
                     self.AIworld.addAiChar(self.newEnemy.setupAI(self.player.actor))
         return task.again
@@ -213,8 +219,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
             
     def update(self, task):
         print "HEALTH: " + str(self.player.health)
-        #if self.player.health <= 0:
-        #    return task.done
+        self.hud_weapon.setText("WEAPON: " + self.player.selected_weapon)
         if self.player.selected_weapon == "SMG":
             print "WEAPON: " + str(self.player.selected_weapon)
             print "SMG MAG: " + str(self.player.smg_mag)
