@@ -24,17 +24,15 @@ class Bullet():
             B.reparentTo(self.bulletNode)
             B.setPythonTag("owner", self)
             self.offset = random.uniform(-0.5,0.5)
-            print str(self.offset)
-            B.setPos(parent.actor,4+self.offset,2*self.offset,2*self.offset)
+            B.setPos(parent.actor,7+self.offset,2*self.offset,2*self.offset)
             B.setHpr(parent.actor,0,0,0)
         if shotgun:
             self.bulletNP.setScale(.10)
             B = self.bulletNP
             self.offset = random.uniform(-2,2)
-            print str(self.offset)
             B.reparentTo(self.bulletNode)
             B.setPythonTag("owner", self)
-            B.setPos(parent.actor,4+self.offset,2*self.offset, self.offset)
+            B.setPos(parent.actor,7+self.offset,2*self.offset, self.offset)
             B.setHpr(parent.actor,0,0,0)
         
         #Setup Collision

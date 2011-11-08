@@ -74,7 +74,7 @@ class Enemy1(object):
         self.actor = Actor("models/tank")
         self.actor.setH(self.actor.getH() - 180)
         self.actor.reparentTo(render)
-        self.actor.setScale(0.2)
+        self.actor.setScale(0.4)
         
     def distanceToTarget(self):
         return math.sqrt((self.actor.getX() - self.target.getX())**2 + (self.actor.getY() - self.target.getY())**2 )#+ (self.actor.getZ() - self.target.getZ()))
@@ -125,7 +125,7 @@ class Enemy1(object):
         entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(),
                                      x.getSurfacePoint(render).getZ()))
         if (len(entries)>0) and (entries[0].getIntoNode().getName() == "terrain"):
-            self.actor.setZ(entries[0].getSurfacePoint(render).getZ()+0.5)
+            self.actor.setZ(entries[0].getSurfacePoint(render).getZ()+1)
             startpos = self.actor.getPos()
         else:
             self.actor.setPos(startpos)
@@ -140,6 +140,7 @@ class Enemy1(object):
             entry = self.cHandler.getEntry(i)
             if entry.getIntoNode().getName() == "fence_c" or entry.getIntoNode().getName() == "debris":
                 self.actor.setPos(startpos)
+                
         
         # Keep enemy within bounds (HACK)
         edge = 43
@@ -169,26 +170,27 @@ class Enemy1(object):
         h1 = self.actor.getH()
         self.actor.lookAt(game.player.actor)
         h2 = self.actor.getH()
-        self.actor.setH(h1)
-        hpr = self.actor.getHpr()
         h = math.fabs(h1 - h2) - 180
         
         # Firing angle and fire rate code
         if math.fabs(h) < 15 and self.timer <= 0:
+            self.actor.setH(self.actor.getH()-90)
             ## Put firing code here
-            print h
+            #print hpr
             b1 = bullets.Bullet(self,game)
             b2 = bullets.Bullet(self,game)
             b3 = bullets.Bullet(self,game)
-            b1.bulletNP.setZ(2)
-            b2.bulletNP.setZ(2)
-            b3.bulletNP.setZ(2)
-            b1.bulletNP.setH(self.actor.getH() + h)
-            b2.bulletNP.setH(self.actor.getH() + h)
-            b3.bulletNP.setH(self.actor.getH() + h)
+            #b1.bulletNP.setZ(2)
+            #b2.bulletNP.setZ(2)
+            #b3.bulletNP.setZ(2)
+            #b1.bulletNP.setH(self.actor.getH() + h-90)
+            #b2.bulletNP.setH(self.actor.getH() + h-90)
+            #b3.bulletNP.setH(self.actor.getH() + h-90)
             self.timer = self.fire_rate
         else:
             self.timer -= 1
+        self.actor.setH(h1)
+        hpr = self.actor.getHpr()
         
     def die(self):
         taskMgr.remove(self.heightTask)

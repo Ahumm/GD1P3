@@ -186,7 +186,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         task.delayTime = self.wavetimer
         if not self.paused:
             for i in range(5):
-                if len(self.enemies) < 1:
+                if len(self.enemies) < 11:
                     self.newEnemy = enemies.Enemy1(self,random.choice(self.spawnlocs))	
                     self.enemies.append(self.newEnemy)
                     self.AIworld.addAiChar(self.newEnemy.setupAI(self.player.actor))
