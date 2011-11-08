@@ -215,7 +215,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
     def update(self, task):
         print "HEALTH: " + str(self.player.health)
         #if self.player.health <= 0:
-        #    task.done
+        #    return task.done
         if self.player.selected_weapon == "SMG":
             print "WEAPON: " + str(self.player.selected_weapon)
             print "SMG MAG: " + str(self.player.smg_mag)
