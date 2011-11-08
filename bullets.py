@@ -24,17 +24,15 @@ class Bullet():
             B.reparentTo(self.bulletNode)
             B.setPythonTag("owner", self)
             self.offset = random.uniform(-0.5,0.5)
-            print str(self.offset)
-            B.setPos(parent.actor,4+self.offset,2*self.offset,2*self.offset)
+            B.setPos(parent.actor,7+self.offset,2*self.offset,2*self.offset)
             B.setHpr(parent.actor,0,0,0)
         if shotgun:
             self.bulletNP.setScale(.10)
             B = self.bulletNP
             self.offset = random.uniform(-2,2)
-            print str(self.offset)
             B.reparentTo(self.bulletNode)
             B.setPythonTag("owner", self)
-            B.setPos(parent.actor,4+self.offset,2*self.offset, self.offset)
+            B.setPos(parent.actor,7+self.offset,2*self.offset, self.offset)
             B.setHpr(parent.actor,0,0,0)
         
         #Setup Collision
@@ -57,10 +55,6 @@ class Bullet():
         #messenger.toggleVerbose()
         
         #vars like speed, damage, distance will be passed to some method later
-        self.speed = 100.0
-        self.distance = 50.0
-        self.deleteMe = 0
-        self.damage = 12
         if shotgun:
             self.speed = 400
             self.distance = 40.0
