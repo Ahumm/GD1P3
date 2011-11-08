@@ -97,7 +97,10 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.cgcol.setIntoCollideMask(BitMask32.allOff())
         self.cgcolnp = camera.attachNewNode(self.cgcol)
         self.cghandler = CollisionHandlerQueue()
-        self.cTrav.addCollider(self.cgcolnp, self.cghandler)       
+        self.cTrav.addCollider(self.cgcolnp, self.cghandler)
+        
+
+        
    
         self.paused = False
         self.setAI()
@@ -142,7 +145,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         #ambient light
         self.ambientLight = AmbientLight("ambientLight")
         #four values, RGBA (alpha is largely irrelevent), value range is 0:1
-        self.ambientLight.setColor((.01, .01, .01, 0.1))
+        self.ambientLight.setColor((.5, .5, .4, 1))
         self.ambientLightNP = render.attachNewNode(self.ambientLight)
         #the nodepath that calls setLight is what gets illuminated by the light
         render.setLight(self.ambientLightNP)
@@ -153,11 +156,12 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.keyLightNP = render.attachNewNode(self.keyLight)
         self.keyLightNP.setHpr(0, -26, 0)
         render.setLight(self.keyLightNP)
+        """
         self.fillLight = DirectionalLight("fillLight")
         self.fillLight.setColor((.4,.4,.4, 1))
         self.fillLightNP = render.attachNewNode(self.fillLight)
         self.fillLightNP.setHpr(30, 0, 0)
-        render.setLight(self.fillLightNP)    
+        render.setLight(self.fillLightNP)    """
         
         
     def setupCollisions(self):
@@ -180,11 +184,10 @@ class World(DirectObject): #subclassing here is necessary to accept events
     def spawnEnemies(self,task):
         print "Spawning Wave!"
         task.delayTime = self.wavetimer
-        if not self.paused:
-            for i in range(5):
-                self.newEnemy = enemies.Enemy1(self,random.choice(self.spawnlocs))	
-                self.enemies.append(self.newEnemy)
-                self.AIworld.addAiChar(self.newEnemy.setupAI(self.player.actor))
+        for i in range(5):
+            self.newEnemy = enemies.Enemy1(self,random.choice(self.spawnlocs))    
+            self.enemies.append(self.newEnemy)
+            self.AIworld.addAiChar(self.newEnemy.setupAI(self.player.actor))
         return task.again
     
     def AIUpdate(self,task):
