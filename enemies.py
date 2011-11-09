@@ -12,7 +12,7 @@ import math,bullets,mortar
 class Enemy1(object):
     def __init__(self,game,spawnloc = (0,0,0),name = "Enemy-0-0"):
         self.health = 40
-        self.value = 10
+        self.value = 1000
         self.maxspeed = 5
         
         self.name = name
@@ -143,13 +143,13 @@ class Enemy1(object):
                 self.pause_e()
                 self.resume_e()
             if entry.getIntoNode().getName() == "ball":
-                print "hit: ball"
+                #print "hit: ball"
                 self.health -= 8
             if entry.getIntoNode().getName() == "shotgun_bullet":
-                print "hit: shotgun"
+                #print "hit: shotgun"
                 self.health -= 12
             if entry.getIntoNode().getName() == "mortar":
-                print "hit: mortar"
+                #print "hit: mortar"
                 self.health -= 20
                 
         # Keep enemy within bounds (HACK)
@@ -207,8 +207,8 @@ class Enemy1(object):
         
 class Enemy2(object):
     def __init__(self,game,spawnloc = (0,0,0),name = "Enemy-0-0"):
-        self.health = 40
-        self.value = 10
+        self.health = 80
+        self.value = 1500
         self.maxspeed = 5
         
         self.name = name
@@ -339,13 +339,13 @@ class Enemy2(object):
                 self.pause_e()
                 self.resume_e()
             if entry.getIntoNode().getName() == "ball":
-                print "hit: ball"
+                #print "hit: ball"
                 self.health -= 8
             if entry.getIntoNode().getName() == "shotgun_bullet":
-                print "hit: shotgun"
+                #print "hit: shotgun"
                 self.health -= 12
             if entry.getIntoNode().getName() == "mortar":
-                print "hit: mortar"
+                #print "hit: mortar"
                 self.health -= 20
                 
         # Keep enemy within bounds (HACK)
@@ -399,8 +399,8 @@ class Enemy2(object):
         
 class Enemy3(object):
     def __init__(self,game,spawnloc = (0,0,0),name = "Enemy-0-0"):
-        self.health = 60
-        self.value = 15
+        self.health = 20
+        self.value = 2000
         self.maxspeed = 10
         
         self.name = name
@@ -531,13 +531,13 @@ class Enemy3(object):
                 self.pause_e()
                 self.resume_e()
             if entry.getIntoNode().getName() == "ball":
-                print "hit: ball"
+                #print "hit: ball"
                 self.health -= 8
             if entry.getIntoNode().getName() == "shotgun_bullet":
-                print "hit: shotgun"
+                #print "hit: shotgun"
                 self.health -= 12
             if entry.getIntoNode().getName() == "mortar":
-                print "hit: mortar"
+                #print "hit: mortar"
                 self.health -= 20
                 
         # Keep enemy within bounds (HACK)

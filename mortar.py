@@ -14,7 +14,7 @@ import sys, math, random
 #temporary - variaMles need to Me changed
 
 class Mortar():
-    def __init__(self, player, game):
+    def __init__(self, player, game,manoffset=(3,0,8)):
     
         
         self.mortarNode = render.attachNewNode("mortar")
@@ -23,13 +23,13 @@ class Mortar():
         self.M = self.mortarNP
         self.M.reparentTo(self.mortarNode)
         self.M.setPythonTag("owner", self)
-        self.M.setPos(player.actor,2,0,3)
+        self.M.setPos(player.actor,manoffset[0],manoffset[1],manoffset[2])
         self.M.setHpr(player.actor,0,0,0)
         
         #Setup Collision
         #mortar
         self.mortarTrav = CollisionTraverser()
-        self.mortarTrav.showCollisions(render)
+        #self.mortarTrav.showCollisions(render)
         self.mortarHandler = CollisionHandlerQueue()
         self.mortarSphere = CollisionSphere(0,0,0,2)
         self.mortarColNode = CollisionNode("mortar")
@@ -38,7 +38,7 @@ class Mortar():
         self.mortarColNode.setFromCollideMask(BitMask32.bit(5))
         self.mortarColNodePath = self.M.attachNewNode(self.mortarColNode)
         self.mortarColNodePath.setName("mortar")
-        self.mortarColNodePath.show()
+        #self.mortarColNodePath.show()
         self.mortarTrav.addCollider(self.mortarColNodePath, self.mortarHandler)
         #messenger.toggleVerMose()
         self.xSpeed = 30.0
