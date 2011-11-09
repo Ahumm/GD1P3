@@ -109,8 +109,9 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.setAI()
         
         
-        self.hud_weapon = OnscreenText(text = "WEAPON: "+self.player.selected_weapon, pos = (0.75, -0.8), scale = 0.07, font = self.cfont, fg=(180,180,180,1))
-        
+        self.hud_weapon = OnscreenText(text = "WEAPON: "+ str(self.player.selected_weapon), pos = (0.75, -0.8), scale = 0.07, font = self.cfont, fg=(180,180,180,1), shadow = (0,0,0,1))
+        self.hud_health = OnscreenText(text = "HEALTH: "+ str(self.player.health), pos= (-0.9, -0.8), scale = 0.07, font = self.cfont, fg=(180,180,180,1), shadow=(0,0,0,1)) 
+        self.hud_ammo = OnscreenText(text = "AMMO: ", pos=(0.75, -0.9), scale=0.07, font = self.cfont, fg=(180,180,180,1), shadow=(0,0,0,1))
         # Set the enemy spawn points and frequenct of spawns
         self.wavetimer = 30
         self.spawnlocs = [(30,30,0),( 30,-30,0),(-30,30,0),(-30,-30,0),
@@ -119,7 +120,6 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.spawnTask = taskMgr.doMethodLater(2,self.spawnEnemies,'spawnTask')
         
         #self.explosions_handler = explosions.Explosions_Manager()
-        
         taskMgr.add(self.update, "update")
         taskMgr.add(self.player_shoot, "Shoot")
         
@@ -220,17 +220,36 @@ class World(DirectObject): #subclassing here is necessary to accept events
             
     def update(self, task):
         print "HEALTH: " + str(self.player.health)
-        self.hud_weapon.setText("WEAPON: " + self.player.selected_weapon)
+        self.hud_weapon.setText("WEAPON: " + str(self.player.selected_weapon))
+        if self.player.health <= 25:
+            self.hud_health.setFg((180,0,0,1))
+        else: 
+            self.hud_health.setText("HEALTH: " + str(self.player.health))
         if self.player.selected_weapon == "SMG":
             print "WEAPON: " + str(self.player.selected_weapon)
+            self.hud_ammo.setText("AMMO: " + str(self.player.smg_mag))
+            if self.player.smg_mag == 0:
+                self.hud_ammo.setFg((180,0,0,1))
+            else:
+                self.hud_ammo.setFg((180,180,180,1))
             print "SMG MAG: " + str(self.player.smg_mag)
             print "SMG RELOAD TIME: " + str(self.player.smg_reload_time)
-        elif self.player.selected_weapon == "Shotgun":
+        elif self.player.selected_weapon == "SHOTGUN":
             print "WEAPON: " + str(self.player.selected_weapon)
+            if self.player.shotgun_mag == 0:
+                self.hud_ammo.setFg((180,0,0,1))
+            else:
+                self.hud_ammo.setFg((180,180,180,1))
+            self.hud_ammo.setText("AMMO: " + str(self.player.shotgun_mag))
             print "SHOTGUN MAG: " + str(self.player.shotgun_mag)
             print "SHOTGUN RELOAD TIME: " + str(self.player.shotgun_reload_time)
         else:
             print "WEAPON: " + str(self.player.selected_weapon)
+            self.hud_ammo.setText("LOADED")
+            if self.player.mortar_loaded == False:
+                self.hud_ammo.setFg((180,0,0,1))
+            else:
+                self.hud_ammo.setFg((180,180,180,1))
             print "MORTAR RELOAD TIME: " + str(self.player.mortar_load_time)
         if self.pause == True:
             print "PAUSED"
