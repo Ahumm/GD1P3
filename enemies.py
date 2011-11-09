@@ -10,10 +10,12 @@ import math,bullets
 
 #Class for each enemy, lot of (planned) variance, seemed easier than subclassing, feel free to change
 class Enemy1(object):
-    def __init__(self,game,spawnloc = (0,0,0)):
-        self.health = 20
+    def __init__(self,game,spawnloc = (0,0,0),name = "Enemy-0-0"):
+        self.health = 40
         self.value = 10
         self.maxspeed = 5
+        
+        self.name = name
         
         # Load the enemy model and set the initial position of it
         self.loadModel()
@@ -47,7 +49,7 @@ class Enemy1(object):
         # Collision stuff for bullets
         #self.cTrav = CollisionTraverser()
         self.cHandler = CollisionHandlerQueue()
-        self.cSphere = CollisionSphere(0,0,0, 6)
+        self.cSphere = CollisionSphere(0,0,4, 8)
         self.cNode = CollisionNode("Enemy")
         self.cNodePath = self.actor.attachNewNode(self.cNode)
         self.cNodePath.node().addSolid(self.cSphere)
@@ -83,14 +85,14 @@ class Enemy1(object):
     def setupAI(self, target):
         """ Start the enemy's AI """
         self.target = target
-        self.AIchar = AICharacter("enemy",self.actor,100,0.05,self.maxspeed)
+        self.AIchar = AICharacter(self.name,self.actor,100,0.05,self.maxspeed)
         self.AIbehaviors = self.AIchar.getAiBehaviors()
         self.AIbehaviors.evade(self.target,2,10,1.0)
         self.AIbehaviors.pursue(self.target,1.0)
         self.AIbehaviors.wander(4,3,100,0.5)
         self.pause_e()
         self.resume_e()
-        self.actor.loop("run")
+        #self.actor.loop("run")
         return self.AIchar
         
     def updateAI(self,game):
@@ -132,13 +134,21 @@ class Enemy1(object):
         self.actor.setHpr(self.actor.getH(),0,0)
         self.actor.setH(self.actor.getH() - 180)
         
-        # Check boundaries
+        # Check boundaries and bullets
         for i in range(self.cHandler.getNumEntries()):
             entry = self.cHandler.getEntry(i)
             if entry.getIntoNode().getName() == "fence_c" or entry.getIntoNode().getName() == "debris":
                 self.actor.setPos(self.safepos)
                 self.pause_e()
                 self.resume_e()
+            if entry.getIntoNode().getName() == "ball":
+                print "hit"
+                self.health -= 8
+            if entry.getIntoNode().getName() == "shotgun_bullet":
+                self.health -= 12
+            if entry.getIntoNode().getName() == "mortar":
+                self.health -= 20
+            #print entry.getIntoNode().getName()
                 
         # Keep enemy within bounds (HACK)
         edge = 43
@@ -150,6 +160,12 @@ class Enemy1(object):
             self.actor.setPos(self.actor.getX(),-edge,self.actor.getZ())
         if self.actor.getY() > edge:
             self.actor.setPos(self.actor.getX(),edge,self.actor.getZ())
+            
+        if self.health <= 0:
+            game.score += self.value
+            game.explosions_handler.Mortar_Explosion(self.actor.getPos())
+            #self.die()
+            return Task.done
             
         return Task.cont
         
@@ -186,8 +202,8 @@ class Enemy1(object):
         hpr = self.actor.getHpr()
         
     def die(self):
-        taskMgr.remove(self.heightTask)
         self.actor.removeNode()
+        self.actor.cleanup()
         
 class Enemy2(object):
     def __init__(self):
