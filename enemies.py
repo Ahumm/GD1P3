@@ -143,12 +143,14 @@ class Enemy1(object):
                 self.pause_e()
                 self.resume_e()
             if entry.getIntoNode().getName() == "ball":
+                print "hit: ball"
                 self.health -= 8
             if entry.getIntoNode().getName() == "shotgun_bullet":
+                print "hit: shotgun"
                 self.health -= 12
             if entry.getIntoNode().getName() == "mortar":
+                print "hit: mortar"
                 self.health -= 20
-            #print entry.getIntoNode().getName()
                 
         # Keep enemy within bounds (HACK)
         edge = 43
@@ -186,9 +188,9 @@ class Enemy1(object):
         # Firing angle and fire rate code
         if math.fabs(h) < 15 and self.timer <= 0:
             ## Put firing code here
-            b1 = bullets.Bullet(self,game,manoffset=(0,9,0))
-            b2 = bullets.Bullet(self,game,manoffset=(0,9,0))
-            b3 = bullets.Bullet(self,game,manoffset=(0,9,0))
+            b1 = bullets.Bullet(self,game,manoffset=(0,9,2))
+            b2 = bullets.Bullet(self,game,manoffset=(0,9,2))
+            b3 = bullets.Bullet(self,game,manoffset=(0,9,2))
             b1.bulletNP.setH(b1.bulletNP.getH() + 90)
             b2.bulletNP.setH(b2.bulletNP.getH() + 90)
             b3.bulletNP.setH(b3.bulletNP.getH() + 90)
