@@ -94,6 +94,11 @@ class Bullet():
     def traverseAll(self, game):
         if not game.paused:
             self.bulletTrav.traverse(render)
+            
+            for i in range(self.bulletHandler.getNumEntries()):
+                if self.bulletHandler.getEntry(i).getIntoNode().getName()!="bullet" and self.bulletHandler.getEntry(i).getIntoNode().getName()!="ball" :
+                    self.destroyMe()
+                    return Task.done
         return Task.cont
 
 
