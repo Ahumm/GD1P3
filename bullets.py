@@ -58,18 +58,18 @@ class Bullet():
         
         #vars like speed, damage, distance will be passed to some method later
         if shotgun:
-            self.speed = 400
-            self.distance = 40.0
+            self.speed = 4000
+            self.distance = 6
             self.deleteMe = 0
             self.damage = 8
         else:
-            self.speed = 280
-            self.distance = 70.0
+            self.speed = 4000
+            self.distance = 30
             self.deleteMe = 0
             self.damage = 12
         #tmaxLife is created var, we need it so bullets dont go on forever
-        self.maxLife = self.distance / self.speed
-        self.life = 0.00001  
+        self.maxLife =  self.distance 
+        self.life = 1  
         
         taskMgr.add(self.traverseAll, "traverseAll",extraArgs=[game])
         taskMgr.add(self.move, "move", extraArgs=[game],uponDeath=self.destroyMe)
@@ -80,7 +80,7 @@ class Bullet():
             if self.deleteMe == 1:
                 return Task.done
         
-            elif self.life > 10*self.maxLife:
+            elif self.life > self.maxLife:
                 return Task.done
             else:
                 #move bullet forward, dependant on delta time
@@ -88,7 +88,7 @@ class Bullet():
                 #self.dt = self.parent.dt
                 self.dt = 0.01
                 B.setX(B, self.dt * self.speed)
-                self.life += self.dt
+                self.life += 1
         return Task.cont
                 
     def traverseAll(self, game):
