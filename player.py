@@ -69,7 +69,7 @@ class Player(DirectObject):
         self.cNode = CollisionNode("Player")
         self.cNode.addSolid(self.cSphere)
         self.cNodePath = self.actor.attachNewNode(self.cNode)
-        #self.cNodePath.show()
+        self.cNodePath.show()
         self.cTrav.addCollider(self.cNodePath, self.cHandler)
         
         
@@ -124,6 +124,8 @@ class Player(DirectObject):
         # Hover Task
         taskMgr.add(self.hover, "PlayerHover", extraArgs=[game])
         
+        # Hit Task
+        taskMgr.add(self.hit_check, "PlayerHit", extraArgs=[game])
         
         # Add Logic Update Task
         taskMgr.add(self.update_counters, "PlayerUpdate", extraArgs=[game])
@@ -141,7 +143,8 @@ class Player(DirectObject):
         if not game.paused:
             for i in range(self.cHandler.getNumEntries()):
                 entry = self.cHandler.getEntry(i)
-                if entry.getFromNode().getName == "bullet":
+                if entry.getIntoNode().getName() == "ball":
+                    print "damage"
                     self.take_damage(10)
         return Task.cont
                 
