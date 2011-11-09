@@ -193,9 +193,11 @@ class World(DirectObject): #subclassing here is necessary to accept events
         render.setLight(self.fillLightNP)    """
         
     def pause(self):
-        self.paused = True
-        self.resume_button = DirectButton(text = ("Resume"), scale = 0.2, text_font = self.cfont, command = self.resume_game, pos=(0, 0, 0.4))
-        self.exit_button = DirectButton(text = ("Exit"), scale = 0.2, text_font = self.cfont, command = self.exit_game, pos=(0, 0, 0))
+        if not self.paused:
+            self.paused = True
+            self.pause_text = OnscreenText(text = "PAUSED", pos = (0, 0.5), scale = 0.1, font = self.cfont, fg=(180,180,180,1), shadow = (0,0,0,1))
+            self.resume_button = DirectButton(text = ("RESUME"), scale = 0.2, text_font = self.cfont, command = self.resume_game, pos=(0, 0, 0.0))
+            self.exit_button = DirectButton(text = ("EXIT"), scale = 0.2, text_font = self.cfont, command = self.exit_game, pos=(0, 0,-0.4))
     
     def setAI(self):
         """ Set up The AI world"""
@@ -246,6 +248,8 @@ class World(DirectObject): #subclassing here is necessary to accept events
         
         
     def remove_pause_menu(self):
+        if self.pause_text:
+            self.pause_text.removeNode()
         if self.resume_button:
             self.resume_button.removeNode()
         if self.exit_button:

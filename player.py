@@ -393,7 +393,7 @@ class Player(DirectObject):
     def die(self, game):
         game.paused = True
         if not self.continue_on_screen:
-            self.you_lose = OnscreenText(text = "CONTINUE?", pos = (0, 0), scale = 0.05, font = self.cfont, fg=(180,180,180,1), shadow = (0,0,0,1))
+            self.you_lose = OnscreenText(text = "CONTINUE?", pos = (0, 0), scale = 0.08, font = self.cfont, fg=(180,180,180,1), shadow = (0,0,0,1))
             self.restart_button = DirectButton(text = "CONTINUE", scale = .12, text_font = self.cfont, text_fg = ((0,0,0,1)), command = self.restart_game, extraArgs=[game],pos=(0, 0, 0.5))
             self.exit_button = DirectButton(text = "EXIT", scale = 0.12, text_font = self.cfont, command = self.exit_game, pos=(0, 0, -0.5))
             self.continue_on_screen = True
