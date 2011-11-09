@@ -253,7 +253,10 @@ class World(DirectObject): #subclassing here is necessary to accept events
             
     def update(self, task):
         self.hud_health.setText("HEALTH: " + str(self.player.health))
-        self.hud_weapon.setText("WEAPON: " + str(self.player.selected_weapon))
+        if str(self.player.selected_weapon) == "SMG":
+            self.hud_weapon.setText("WEAPON: MAIN GUN")
+        else:
+            self.hud_weapon.setText("WEAPON: " + str(self.player.selected_weapon))
         self.hud_wave.setText("WAVE: " + str(self.wave))
         self.hud_score.setText("SCORE: " + str(self.score))
         if self.player.health <= 25:

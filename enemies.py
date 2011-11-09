@@ -144,7 +144,7 @@ class Enemy1(object):
                 self.resume_e()
             if entry.getIntoNode().getName() == "ball":
                 #print "hit: ball"
-                self.health -= 8
+                self.health -= 10
             if entry.getIntoNode().getName() == "shotgun_bullet":
                 #print "hit: shotgun"
                 self.health -= 12
@@ -203,7 +203,7 @@ class Enemy1(object):
         
 class Enemy2(object):
     def __init__(self,game,spawnloc = (0,0,0),name = "Enemy-0-0"):
-        self.health = 80
+        self.health = 60
         self.value = 1500
         self.maxspeed = 5
         
@@ -241,7 +241,7 @@ class Enemy2(object):
         # Collision stuff for bullets
         #self.cTrav = CollisionTraverser()
         self.cHandler = CollisionHandlerQueue()
-        self.cSphere = CollisionSphere(0,0,4, 8)
+        self.cSphere = CollisionSphere(4.5,0,4, 8)
         self.cNode = CollisionNode("Enemy")
         self.cNodePath = self.actor.attachNewNode(self.cNode)
         self.cNodePath.node().addSolid(self.cSphere)
@@ -319,7 +319,7 @@ class Enemy2(object):
         entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(),
                                      x.getSurfacePoint(render).getZ()))
         if (len(entries)>0) and (entries[0].getIntoNode().getName() == "terrain"):
-            self.actor.setZ(entries[0].getSurfacePoint(render).getZ()+0)
+            self.actor.setZ(entries[0].getSurfacePoint(render).getZ()+0.25)
             self.safepos = self.actor.getPos()
         else:
             self.actor.setPos(self.safepos)
@@ -336,7 +336,7 @@ class Enemy2(object):
                 self.resume_e()
             if entry.getIntoNode().getName() == "ball":
                 #print "hit: ball"
-                self.health -= 8
+                self.health -= 10
             if entry.getIntoNode().getName() == "shotgun_bullet":
                 #print "hit: shotgun"
                 self.health -= 12
@@ -528,7 +528,7 @@ class Enemy3(object):
                 self.resume_e()
             if entry.getIntoNode().getName() == "ball":
                 #print "hit: ball"
-                self.health -= 8
+                self.health -= 10
             if entry.getIntoNode().getName() == "shotgun_bullet":
                 #print "hit: shotgun"
                 self.health -= 12

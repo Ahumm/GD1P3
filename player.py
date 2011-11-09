@@ -158,8 +158,8 @@ class Player(DirectObject):
         if not game.paused:
             if self.selected_weapon == "SMG":
                 if self.smg_can_fire:
-                    if self.smg_mag >= self.smg_burst_count:
-                        self.smg_mag -= self.smg_burst_count
+                    if self.smg_mag >= 1:
+                        self.smg_mag -= 1
                         self.smg_fire_counter += self.smg_fire_rate
                         self.smg_can_fire = False
                         game.smg_fire.setVolume(0.8)
@@ -208,7 +208,7 @@ class Player(DirectObject):
                     if self.smg_reload_counter > 0:
                         self.smg_reload_counter -= 1
                     if self.smg_reload_counter == 0:
-                        self.smg_mag = 30
+                        self.smg_mag = 15
                         self.smg_reloading = False
                         game.smg_load.setVolume(0.7)
                         game.smg_load.play()
