@@ -46,7 +46,7 @@ class Mortar():
         self.zSpeeddec = 0.5
         self.deleteMe = 0
         self.damage = 12
-        self.destroyed = False
+        self.destroy = False
         #tmaxLife is created var, we need it so mortars dont go on forever
 
         
@@ -65,16 +65,17 @@ class Mortar():
             if self.destroy:
                 self.destroy = True
                 return Task.done
-            self.M.setX(self.M, self.xSpeed * globalClock.getDt())
-            self.M.setZ(self.M, self.zSpeed * globalClock.getDt())
-            self.zSpeed -= self.zSpeeddec
-            self.m_entries = []
-            for i in range(self.mortarHandler.getNumEntries()):
-                entry = self.mortarHandler.getEntry(i)
-                if entry.getIntoNode().getName() == "fence_c" or entry.getIntoNode().getName() =="terrain" or entry.getIntoNode().getName() =="debris" or entry.getIntoNode().getName() =="Enemy":
-                    self.m_entries.append(entry)
-            if len(self.m_entries) > 0:
-                self.mortarSphere.setRadius(10)
+            else:
+                self.M.setX(self.M, self.xSpeed * globalClock.getDt())
+                self.M.setZ(self.M, self.zSpeed * globalClock.getDt())
+                self.zSpeed -= self.zSpeeddec
+                self.m_entries = []
+                for i in range(self.mortarHandler.getNumEntries()):
+                    entry = self.mortarHandler.getEntry(i)
+                    if entry.getIntoNode().getName() == "fence_c" or entry.getIntoNode().getName() =="terrain" or entry.getIntoNode().getName() =="debris" or entry.getIntoNode().getName() =="Enemy":
+                        self.m_entries.append(entry)
+                if len(self.m_entries) > 0:
+                    self.mortarSphere.setRadius(10)
 
         return Task.cont
 
@@ -83,6 +84,5 @@ class Mortar():
         game.explosions_handler.Mortar_Explosion(self.M.getPos())
         self.mortarNP.clearPythonTag("owner")
         self.mortarNode.removeNode()
-        self.destroyed = True 
         del self
         
