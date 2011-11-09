@@ -41,7 +41,7 @@ class Bullet():
         #Bullet
         self.bulletTrav = CollisionTraverser()
         #self.bulletTrav.showCollisions(render)
-        self.bulletHandler = CollisionHandlerEvent()
+        self.bulletHandler = CollisionHandlerQueue()
         self.bulletSphere = CollisionSphere(0,0,0,1)
         self.bulletColNode = CollisionNode("bullet")
         self.bulletColNode.addSolid(self.bulletSphere)
@@ -97,11 +97,11 @@ class Bullet():
             
             for i in range(self.bulletHandler.getNumEntries()):
                 if self.bulletHandler.getEntry(i).getIntoNode().getName()!="bullet" and self.bulletHandler.getEntry(i).getIntoNode().getName()!="ball" :
-                    self.destroyMe()
+                    self.destroyMe(game)
                     return Task.done
         return Task.cont
 
 
-    def destroyMe(self, x):
+    def destroyMe(self,game):
         self.bulletNP.clearPythonTag("owner")
         self.bulletNode.removeNode()
