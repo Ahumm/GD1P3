@@ -576,11 +576,11 @@ class Enemy3(object):
         # Firing angle and fire rate code
         if math.fabs(h) < 15 and self.timer <= 0:
             ## Put firing code here
-            b1 = bullets.Bullet(self,game,True,manoffset=(0,9,2))
-            b2 = bullets.Bullet(self,game,True,manoffset=(0,9,2))
-            b3 = bullets.Bullet(self,game,True,manoffset=(0,9,2))
-            b4 = bullets.Bullet(self,game,True,manoffset=(0,9,2))
-            b5 = bullets.Bullet(self,game,True,manoffset=(0,9,2))
+            b1 = bullets.Bullet(self,game,True,manoffset=(5,11,2))
+            b2 = bullets.Bullet(self,game,True,manoffset=(5,11,2))
+            b3 = bullets.Bullet(self,game,True,manoffset=(5,11,2))
+            b4 = bullets.Bullet(self,game,True,manoffset=(5,11,2))
+            b5 = bullets.Bullet(self,game,True,manoffset=(5,11,2))
             b1.bulletNP.setH(b1.bulletNP.getH() + 90)
             b2.bulletNP.setH(b2.bulletNP.getH() + 90)
             b3.bulletNP.setH(b3.bulletNP.getH() + 90)

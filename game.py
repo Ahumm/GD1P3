@@ -28,7 +28,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.wave_size = 3
         self.max_enemies = 6
         self.score = 0
-        self.wave = 1
+        self.wave = 0
         
         
         # Mapping some keys
@@ -199,7 +199,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
             if len(self.enemies) + self.wave_size <= self.max_enemies:
                 self.wave += 1
                 for i in range(self.wave_size):
-                    self.newEnemy = enemies.Enemy1(self,random.choice(self.spawnlocs),"Enemy-%d-%d"%(self.wave,i))    
+                    self.newEnemy = enemies.Enemy3(self,random.choice(self.spawnlocs),"Enemy-%d-%d"%(self.wave,i))    
                     self.enemies.append(self.newEnemy)
                     self.AIworld.addAiChar(self.newEnemy.setupAI(self.player.actor))
         return task.again
