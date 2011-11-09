@@ -29,6 +29,14 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.max_enemies = 6
         self.score = 0
         self.wave = 0
+        self.background_music = loader.loadSfx("sounds/bgm.wav")
+        self.shotgun_fire = loader.loadSfx("sounds/shotgun_fire.wav")
+        self.smg_fire = loader.loadSfx("sounds/smg_fire.wav")
+        self.mortar_fire = loader.loadSfx("sounds/mortar_fire.wav")
+        self.explosion_1 = loader.loadSfx("sounds/explosion_1.wav")
+        self.explosion_2 = loader.loadSfx("sounds/explosion_2.wav")
+        self.hit = loader.loadSfx("sounds/bullet_hit.wav")
+        self.background_music.setLoop(True)
         
         
         # Mapping some keys
@@ -130,7 +138,8 @@ class World(DirectObject): #subclassing here is necessary to accept events
         
         taskMgr.add(self.update, "update")
         taskMgr.add(self.player_shoot, "Shoot")
-        
+        self.background_music.setVolume(0.4)
+        self.background_music.play()
         
     def create_explosion(self):
         self.explosions_handler.Small_Explosion(VBase3(0,0,3))
