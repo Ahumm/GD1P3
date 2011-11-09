@@ -64,7 +64,6 @@ class Player(DirectObject):
         # Collision for bullets
         self.cTrav = CollisionTraverser()
         self.cHandler = CollisionHandlerQueue()
-        #self.cHandler.addInPattern("
         self.cSphere = CollisionSphere(0,0,0,7)
         self.cNode = CollisionNode("Player")
         self.cNode.addSolid(self.cSphere)
@@ -137,7 +136,16 @@ class Player(DirectObject):
         self.selected_weapon = weapon
         
         
-        
+    def hit_check(self, game):
+        if not game.paused:
+            for i in range(self.cHandler.getNumEntries()):
+                entry = self.cHandler.getEntry(i)
+                if entry.getFromNode().getName == "bullet":
+                    self.take_damage(10)
+        return Task.cont
+                
+
+    
 
         
     def fire(self, game):
