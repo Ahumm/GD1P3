@@ -130,6 +130,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.hud_ammo = OnscreenText(text = "AMMO: ", pos=(0.75, -0.9), scale=0.07, font = self.cfont, fg=(180,180,180,1), shadow=(0,0,0,1))
         self.hud_wave = OnscreenText(text = "WAVE: "+str(self.wave), pos= (-0.9, -0.9), scale = 0.07, font = self.cfont, fg=(180,180,180,1), shadow=(0,0,0,1))
         self.hud_score = OnscreenText(text = "SCORE: "+str(self.score),pos= (0, -0.9), scale = 0.07, font = self.cfont, fg=(180,180,180,1), shadow=(0,0,0,1))
+        
         # Set the enemy spawn points and frequenct of spawns
         self.wavetimer = 30
         self.spawnlocs = [(-1,-30,0),(3,30,0),(-13,2,0),(13,0,0)]#
