@@ -6,7 +6,7 @@ from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
 from direct.gui.DirectGui import * #for buttons and stuff
 from direct.gui.OnscreenText import OnscreenText
-
+import sys
 import bullets
 import mortar
 import time
@@ -16,6 +16,7 @@ import time
 class Player(DirectObject):
     def __init__(self, game):
         # Set ALL the variables!
+        self.continue_on_screen = False
         self.health = 100
         self.cfont = loader.loadFont('Coalition_v2.ttf')
         self.shotgun_mag = 8
@@ -391,9 +392,11 @@ class Player(DirectObject):
     
     def die(self, game):
         game.paused = True
-        self.you_lose = OnscreenText(text = "CONTINUE?", pos = (0, 0), scale = 0.05, font = self.cfont, fg=(180,180,180,1), shadow = (0,0,0,1))
-        self.restart_button = DirectButton(text = "CONTINUE", scale = .12, text_font = self.cfont, text_fg = ((0,0,0,1)), command = self.restart_game, extraArgs=[game],pos=(0, 0, 0.5))
-        self.exit_button = DirectButton(text = "EXIT", scale = 0.12, text_font = self.cfont, command = self.exit_game, pos=(0, 0, -0.5))
+        if not self.continue_on_screen:
+            self.you_lose = OnscreenText(text = "CONTINUE?", pos = (0, 0), scale = 0.05, font = self.cfont, fg=(180,180,180,1), shadow = (0,0,0,1))
+            self.restart_button = DirectButton(text = "CONTINUE", scale = .12, text_font = self.cfont, text_fg = ((0,0,0,1)), command = self.restart_game, extraArgs=[game],pos=(0, 0, 0.5))
+            self.exit_button = DirectButton(text = "EXIT", scale = 0.12, text_font = self.cfont, command = self.exit_game, pos=(0, 0, -0.5))
+            self.continue_on_screen = True
         
     def remove_menu(self):
         if self.you_lose:
@@ -405,6 +408,7 @@ class Player(DirectObject):
     
     def restart_game(self,game):
         game.paused = False
+        self.continue_on_screen = False
         game.score += 1
         self.remove_menu()
         self.health = 100
