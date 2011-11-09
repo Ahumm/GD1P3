@@ -39,7 +39,7 @@ class Enemy1(object):
         self.ralphGroundColNp = self.actor.attachNewNode(self.ralphGroundCol)
         self.ralphGroundHandler = CollisionHandlerQueue()
         self.cTrav.addCollider(self.ralphGroundColNp, self.ralphGroundHandler)
-        self.ralphGroundColNp.show()
+        #self.ralphGroundColNp.show()
         
         self.pursue_start = False
         self.evade_start = False
@@ -53,7 +53,7 @@ class Enemy1(object):
         self.cNode = CollisionNode("Enemy")
         self.cNodePath = self.actor.attachNewNode(self.cNode)
         self.cNodePath.node().addSolid(self.cSphere)
-        self.cNodePath.show()
+        #self.cNodePath.show()
         self.cTrav.addCollider(self.cNodePath, self.cHandler)
         
         #self.heightTask = taskMgr.add(self.updateHeight,'EnemyHeight',extraArgs=[game])
@@ -74,10 +74,11 @@ class Enemy1(object):
         return 0
         
     def loadModel(self):
-        self.actor = Actor("models/tank")
+        self.actor = Actor("models/tank",{'tread':'models/tank'})
+        self.actor.setPlayRate(2.0,'tread')
         self.actor.setH(self.actor.getH() - 180)
         self.actor.reparentTo(render)
-        self.actor.setScale(0.2)
+        self.actor.setScale(0.25)
         
     def distanceToTarget(self):
         return math.sqrt((self.actor.getX() - self.target.getX())**2 + (self.actor.getY() - self.target.getY())**2 )#+ (self.actor.getZ() - self.target.getZ()))
@@ -92,7 +93,7 @@ class Enemy1(object):
         self.AIbehaviors.wander(4,3,100,0.5)
         self.pause_e()
         self.resume_e()
-        #self.actor.loop("run")
+        self.actor.loop("tread")
         return self.AIchar
         
     def updateAI(self,game):
@@ -126,7 +127,7 @@ class Enemy1(object):
         entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(),
                                      x.getSurfacePoint(render).getZ()))
         if (len(entries)>0) and (entries[0].getIntoNode().getName() == "terrain"):
-            self.actor.setZ(entries[0].getSurfacePoint(render).getZ()+1)
+            self.actor.setZ(entries[0].getSurfacePoint(render).getZ()+0.5)
             self.safepos = self.actor.getPos()
         else:
             self.actor.setPos(self.safepos)
@@ -142,13 +143,14 @@ class Enemy1(object):
                 self.pause_e()
                 self.resume_e()
             if entry.getIntoNode().getName() == "ball":
-                print "hit"
+                print "hit: ball"
                 self.health -= 8
             if entry.getIntoNode().getName() == "shotgun_bullet":
+                print "hit: shotgun"
                 self.health -= 12
             if entry.getIntoNode().getName() == "mortar":
+                print "hit: mortar"
                 self.health -= 20
-            #print entry.getIntoNode().getName()
                 
         # Keep enemy within bounds (HACK)
         edge = 43
@@ -165,9 +167,6 @@ class Enemy1(object):
             game.score += self.value
             game.explosions_handler.Mortar_Explosion(self.actor.getPos())
             #self.die()
-            return Task.done
-            
-        return Task.cont
         
     #AI Controls
     def pause_e(self):
@@ -189,9 +188,9 @@ class Enemy1(object):
         # Firing angle and fire rate code
         if math.fabs(h) < 15 and self.timer <= 0:
             ## Put firing code here
-            b1 = bullets.Bullet(self,game,manoffset=(0,7,0))
-            b2 = bullets.Bullet(self,game,manoffset=(0,7,0))
-            b3 = bullets.Bullet(self,game,manoffset=(0,7,0))
+            b1 = bullets.Bullet(self,game,manoffset=(0,9,2))
+            b2 = bullets.Bullet(self,game,manoffset=(0,9,2))
+            b3 = bullets.Bullet(self,game,manoffset=(0,9,2))
             b1.bulletNP.setH(b1.bulletNP.getH() + 90)
             b2.bulletNP.setH(b2.bulletNP.getH() + 90)
             b3.bulletNP.setH(b3.bulletNP.getH() + 90)
@@ -201,9 +200,10 @@ class Enemy1(object):
         self.actor.setH(h1)
         hpr = self.actor.getHpr()
         
-    def die(self):
-        self.actor.removeNode()
+    def die(self,game):
+        game.AIworld.removeAiChar(self.name)
         self.actor.cleanup()
+        self.actor.removeNode()
         
 class Enemy2(object):
     def __init__(self):

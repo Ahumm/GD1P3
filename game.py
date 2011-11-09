@@ -194,6 +194,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         task.delayTime = self.wavetimer
         if not self.paused:
             if len(self.enemies) + self.wave_size <= self.max_enemies:
+                self.wave += 1
                 for i in range(self.wave_size):
                     self.newEnemy = enemies.Enemy1(self,random.choice(self.spawnlocs),"Enemy-%d-%d"%(self.wave,i))    
                     self.enemies.append(self.newEnemy)
@@ -206,8 +207,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
             self.AIworld.update()
             for e in self.enemies:
                 if e.health <= 0:
-                    e.die()
-                    self.AIworld.removeAiChar(e.name)
+                    e.die(self)
                     self.enemies.remove(e)
                 else:
                     e.updateHeight(self)
@@ -242,6 +242,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
             else:
                 self.hud_ammo.setFg((180,180,180,1))
         elif self.player.selected_weapon == "SHOTGUN":
+            self.hud_weapon.setText("WEAPON: " + self.player.selected_weapon)
             if self.player.shotgun_mag == 0:
                 self.hud_ammo.setFg((180,0,0,1))
             else:

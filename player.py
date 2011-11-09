@@ -7,6 +7,7 @@ from direct.task import Task #for update functions
 
 import bullets
 import mortar
+import time
 
 
 
@@ -68,7 +69,7 @@ class Player(DirectObject):
         self.cNode = CollisionNode("Player")
         self.cNode.addSolid(self.cSphere)
         self.cNodePath = self.actor.attachNewNode(self.cNode)
-        self.cNodePath.show()
+        #self.cNodePath.show()
         self.cTrav.addCollider(self.cNodePath, self.cHandler)
         
         

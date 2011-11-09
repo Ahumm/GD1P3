@@ -13,8 +13,8 @@ import sys, math, random
 #temporary - variables need to be changed
 
 class Bullet():
-    def __init__(self, parent, game, shotgun = False, manoffset = (7,0,0)):
-        random.seed()
+    def __init__(self, parent, game, shotgun = False, manoffset = (7,0,0),seed=None):
+        random.seed(seed)
         self.parent = parent
         self.bulletNode = render.attachNewNode("bullet")
         self.bulletNP = loader.loadModel("models/ball")
@@ -24,22 +24,24 @@ class Bullet():
             B.reparentTo(self.bulletNode)
             B.setPythonTag("owner", self)
             self.offset = random.uniform(-0.5,0.5)
-            B.setPos(parent.actor,manoffset[0]+self.offset,manoffset[1]+2*self.offset,manoffset[2]+2*self.offset)
+            self.offset2 = random.uniform(-0.5,0.5)
+            B.setPos(parent.actor,manoffset[0]+self.offset,manoffset[1]+2*self.offset,manoffset[2]+2*self.offset2)
             B.setHpr(parent.actor,0,0,0)
         if shotgun:
             self.bulletNP.setScale(.10)
             B = self.bulletNP
             self.offset = random.uniform(-2,2)
+            self.offset2 = random.uniform(-2,2)
             B.reparentTo(self.bulletNode)
             B.setPythonTag("owner", self)
-            B.setPos(parent.actor,manoffset[0]+self.offset,manoffset[1]+2*self.offset,manoffset[2]+self.offset)
+            B.setPos(parent.actor,manoffset[0]+self.offset,manoffset[1]+2*self.offset,manoffset[2]+self.offset2)
             B.setHpr(parent.actor,0,0,0)
         
         #Setup Collision
         #Bullet
         self.bulletTrav = CollisionTraverser()
-        self.bulletTrav.showCollisions(render)
-        self.bulletHandler = CollisionHandlerEvent()
+        #self.bulletTrav.showCollisions(render)
+        self.bulletHandler = CollisionHandlerQueue()
         self.bulletSphere = CollisionSphere(0,0,0,1)
         self.bulletColNode = CollisionNode("bullet")
         self.bulletColNode.addSolid(self.bulletSphere)
@@ -50,7 +52,7 @@ class Bullet():
             self.bulletColNodePath.setName("shotgun_bullet")
         else:
             self.bulletColNodePath.setName("bullet")
-        self.bulletColNodePath.show()
+        #self.bulletColNodePath.show()
         self.bulletTrav.addCollider(self.bulletColNodePath, self.bulletHandler)
         #messenger.toggleVerbose()
         
@@ -78,12 +80,13 @@ class Bullet():
             if self.deleteMe == 1:
                 return Task.done
         
-            elif self.life > self.maxLife:
+            elif self.life > 10*self.maxLife:
                 return Task.done
             else:
                 #move bullet forward, dependant on delta time
                 B = self.bulletNP
-                self.dt = self.parent.dt
+                #self.dt = self.parent.dt
+                self.dt = 0.01
                 B.setX(B, self.dt * self.speed)
                 self.life += self.dt
         return Task.cont
@@ -91,9 +94,14 @@ class Bullet():
     def traverseAll(self, game):
         if not game.paused:
             self.bulletTrav.traverse(render)
+            
+            for i in range(self.bulletHandler.getNumEntries()):
+                if self.bulletHandler.getEntry(i).getIntoNode().getName()!="bullet" and self.bulletHandler.getEntry(i).getIntoNode().getName()!="ball" :
+                    self.deleteMe = 1
+                    return Task.done
         return Task.cont
 
 
-    def destroyMe(self, x):
+    def destroyMe(self,game):
         self.bulletNP.clearPythonTag("owner")
         self.bulletNode.removeNode()
