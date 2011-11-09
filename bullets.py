@@ -97,7 +97,7 @@ class Bullet():
             
             for i in range(self.bulletHandler.getNumEntries()):
                 if self.bulletHandler.getEntry(i).getIntoNode().getName()!="bullet" and self.bulletHandler.getEntry(i).getIntoNode().getName()!="ball" :
-                    self.destroyMe(game)
+                    self.deleteMe = 1
                     return Task.done
         return Task.cont
 

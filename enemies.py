@@ -143,12 +143,14 @@ class Enemy1(object):
                 self.pause_e()
                 self.resume_e()
             if entry.getIntoNode().getName() == "ball":
+                print "hit: ball"
                 self.health -= 8
             if entry.getIntoNode().getName() == "shotgun_bullet":
+                print "hit: shotgun"
                 self.health -= 12
             if entry.getIntoNode().getName() == "mortar":
+                print "hit: mortar"
                 self.health -= 20
-            #print entry.getIntoNode().getName()
                 
         # Keep enemy within bounds (HACK)
         edge = 43
