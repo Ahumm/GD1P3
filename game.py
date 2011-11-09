@@ -211,8 +211,15 @@ class World(DirectObject): #subclassing here is necessary to accept events
         if not self.paused:
             if len(self.enemies) + self.wave_size <= self.max_enemies:
                 self.wave += 1
+                random.seed()
                 for i in range(self.wave_size):
-                    self.newEnemy = enemies.Enemy3(self,random.choice(self.spawnlocs),"Enemy-%d-%d"%(self.wave,i))    
+                    x = math.floor(random.uniform(0,3))
+                    if x < 1:
+                        self.newEnemy = enemies.Enemy1(self,random.choice(self.spawnlocs),"Enemy-%d-%d"%(self.wave,i))   
+                    elif x < 2:
+                        self.newEnemy = enemies.Enemy2(self,random.choice(self.spawnlocs),"Enemy-%d-%d"%(self.wave,i))    
+                    else:
+                        self.newEnemy = enemies.Enemy3(self,random.choice(self.spawnlocs),"Enemy-%d-%d"%(self.wave,i))    
                     self.enemies.append(self.newEnemy)
                     self.AIworld.addAiChar(self.newEnemy.setupAI(self.player.actor))
         return task.again
