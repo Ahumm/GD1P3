@@ -158,8 +158,8 @@ class Player(DirectObject):
         if not game.paused:
             if self.selected_weapon == "SMG":
                 if self.smg_can_fire:
-                    if self.smg_mag >= self.smg_burst_count:
-                        self.smg_mag -= self.smg_burst_count
+                    if self.smg_mag >= 1:
+                        self.smg_mag -= 1
                         self.smg_fire_counter += self.smg_fire_rate
                         self.smg_can_fire = False
                         game.smg_fire.setVolume(0.8)
