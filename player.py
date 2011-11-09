@@ -208,7 +208,7 @@ class Player(DirectObject):
                     if self.smg_reload_counter > 0:
                         self.smg_reload_counter -= 1
                     if self.smg_reload_counter == 0:
-                        self.smg_mag = 30
+                        self.smg_mag = 15
                         self.smg_reloading = False
                         game.smg_load.setVolume(0.7)
                         game.smg_load.play()
