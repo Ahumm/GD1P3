@@ -7,6 +7,7 @@ from direct.task import Task #for update functions
 
 import bullets
 import mortar
+import time
 
 
 

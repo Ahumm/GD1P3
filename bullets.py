@@ -13,8 +13,8 @@ import sys, math, random
 #temporary - variables need to be changed
 
 class Bullet():
-    def __init__(self, parent, game, shotgun = False, manoffset = (7,0,0)):
-        random.seed()
+    def __init__(self, parent, game, shotgun = False, manoffset = (7,0,0),seed=None):
+        random.seed(seed)
         self.parent = parent
         self.bulletNode = render.attachNewNode("bullet")
         self.bulletNP = loader.loadModel("models/ball")
@@ -24,15 +24,17 @@ class Bullet():
             B.reparentTo(self.bulletNode)
             B.setPythonTag("owner", self)
             self.offset = random.uniform(-0.5,0.5)
-            B.setPos(parent.actor,manoffset[0]+self.offset,manoffset[1]+2*self.offset,manoffset[2]+2*self.offset)
+            self.offset2 = random.uniform(-0.5,0.5)
+            B.setPos(parent.actor,manoffset[0]+self.offset,manoffset[1]+2*self.offset,manoffset[2]+2*self.offset2)
             B.setHpr(parent.actor,0,0,0)
         if shotgun:
             self.bulletNP.setScale(.10)
             B = self.bulletNP
             self.offset = random.uniform(-2,2)
+            self.offset2 = random.uniform(-2,2)
             B.reparentTo(self.bulletNode)
             B.setPythonTag("owner", self)
-            B.setPos(parent.actor,manoffset[0]+self.offset,manoffset[1]+2*self.offset,manoffset[2]+self.offset)
+            B.setPos(parent.actor,manoffset[0]+self.offset,manoffset[1]+2*self.offset,manoffset[2]+self.offset2)
             B.setHpr(parent.actor,0,0,0)
         
         #Setup Collision
