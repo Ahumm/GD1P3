@@ -58,12 +58,12 @@ class Bullet():
         
         #vars like speed, damage, distance will be passed to some method later
         if shotgun:
-            self.speed = 4000
+            self.speed = 1000
             self.distance = 6
             self.deleteMe = 0
             self.damage = 8
         else:
-            self.speed = 4000
+            self.speed = 1000
             self.distance = 30
             self.deleteMe = 0
             self.damage = 12
