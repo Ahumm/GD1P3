@@ -24,13 +24,13 @@ class Player(DirectObject):
         self.shotgun_fire_rate = 20
         self.shotgun_fire_counter = 0
         self.shotgun_reloading = False
-        self.shotgun_reload_time = 180
+        self.shotgun_reload_time = 120
         self.shotgun_reload_counter = 0
         self.mortar_loaded = True
-        self.mortar_load_time = 240
+        self.mortar_load_time = 180
         self.mortar_load_counter = 0
         self.smg_mag = 15
-        self.smg_reload_time = 120
+        self.smg_reload_time = 90
         self.smg_reload_counter = 0
         self.smg_burst_count = 1
         self.smg_fire_rate = 30
@@ -416,4 +416,5 @@ class Player(DirectObject):
     def exit_game(self):
         self.remove_menu()
         sys.exit()
+        
        
