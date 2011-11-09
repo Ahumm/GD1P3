@@ -206,8 +206,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
             self.AIworld.update()
             for e in self.enemies:
                 if e.health <= 0:
-                    e.die()
-                    self.AIworld.removeAiChar(e.name)
+                    e.die(self)
                     self.enemies.remove(e)
                 else:
                     e.updateHeight(self)
@@ -229,22 +228,23 @@ class World(DirectObject): #subclassing here is necessary to accept events
             self.exit_button.removeNode()
             
     def update(self, task):
-        print "HEALTH: " + str(self.player.health)
+        #print "HEALTH: " + str(self.player.health)
         self.hud_weapon.setText("WEAPON: " + str(self.player.selected_weapon))
         if self.player.health <= 25:
             self.hud_health.setFg((180,0,0,1))
         else: 
             self.hud_health.setText("HEALTH: " + str(self.player.health))
         if self.player.selected_weapon == "SMG":
-            print "WEAPON: " + str(self.player.selected_weapon)
+            #print "WEAPON: " + str(self.player.selected_weapon)
             self.hud_ammo.setText("AMMO: " + str(self.player.smg_mag))
             if self.player.smg_mag == 0:
                 self.hud_ammo.setFg((180,0,0,1))
             else:
                 self.hud_ammo.setFg((180,180,180,1))
-            print "SMG MAG: " + str(self.player.smg_mag)
-            print "SMG RELOAD TIME: " + str(self.player.smg_reload_time)
+            #print "SMG MAG: " + str(self.player.smg_mag)
+            #print "SMG RELOAD TIME: " + str(self.player.smg_reload_time)
         elif self.player.selected_weapon == "SHOTGUN":
+            pass
         #print "HEALTH: " + str(self.player.health)
         self.hud_weapon.setText("WEAPON: " + self.player.selected_weapon)
         if self.player.selected_weapon == "SMG":

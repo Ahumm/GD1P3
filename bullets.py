@@ -38,7 +38,7 @@ class Bullet():
         #Setup Collision
         #Bullet
         self.bulletTrav = CollisionTraverser()
-        self.bulletTrav.showCollisions(render)
+        #self.bulletTrav.showCollisions(render)
         self.bulletHandler = CollisionHandlerEvent()
         self.bulletSphere = CollisionSphere(0,0,0,1)
         self.bulletColNode = CollisionNode("bullet")
@@ -50,7 +50,7 @@ class Bullet():
             self.bulletColNodePath.setName("shotgun_bullet")
         else:
             self.bulletColNodePath.setName("bullet")
-        self.bulletColNodePath.show()
+        #self.bulletColNodePath.show()
         self.bulletTrav.addCollider(self.bulletColNodePath, self.bulletHandler)
         #messenger.toggleVerbose()
         
@@ -78,12 +78,13 @@ class Bullet():
             if self.deleteMe == 1:
                 return Task.done
         
-            elif self.life > self.maxLife:
+            elif self.life > 10*self.maxLife:
                 return Task.done
             else:
                 #move bullet forward, dependant on delta time
                 B = self.bulletNP
-                self.dt = self.parent.dt
+                #self.dt = self.parent.dt
+                self.dt = 0.01
                 B.setX(B, self.dt * self.speed)
                 self.life += self.dt
         return Task.cont
