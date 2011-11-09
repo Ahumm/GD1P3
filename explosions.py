@@ -33,15 +33,23 @@ class Explosions_Manager(object):
         self.exp_tex = self.loadTextureMovie(160, 'explosion/explosion', 'png', padding = 4)
         self.mexp_tex = self.loadTextureMovie(120, 'mortar_explosion/mortar_explosion', 'png', padding = 4)
         self.sexp_tex = self.loadTextureMovie(80, 'small_explosion/small_explosion', 'png', padding = 4)
+        self.explosion_1 = loader.loadSfx("sounds/explosion_1.wav")
+        self.explosion_2 = loader.loadSfx("sounds/explosion_2.wav")
         
         
     def Mortar_Explosion(self, position):
+        self.explosion_1.setVolume(0.6)
+        self.explosion_1.play()
         Explosion(position, self.mexp_tex, 6)
         
     def Explosion(self, position):
+        self.explosion_2.setVolume(0.6)
+        self.explosion_2.play()
         Explosion(position,self.exp_tex, 20)
         
     def Small_Explosion(self, position):
+        self.explosion_1.setVolume(0.6)
+        self.explosion_1.play()
         Explosion(position,self.sexp_tex, 10)
 
     def loadTextureMovie(self, frames, name, suffix, padding = 1):
