@@ -36,6 +36,9 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.explosion_1 = loader.loadSfx("sounds/explosion_1.wav")
         self.explosion_2 = loader.loadSfx("sounds/explosion_2.wav")
         self.hit = loader.loadSfx("sounds/bullet_hit.wav")
+        self.shotgun_load = loader.loadSfx("sounds/shotgun_load.wav")
+        self.smg_load = loader.loadSfx("sounds/smg_load.wav")
+        self.mortar_load = loader.loadSfx("sounds/mortar_load.wav")
         self.background_music.setLoop(True)
         
         
