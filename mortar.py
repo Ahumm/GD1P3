@@ -14,7 +14,7 @@ import sys, math, random
 #temporary - variaMles need to Me changed
 
 class Mortar():
-    def __init__(self, player, game):
+    def __init__(self, player, game,manoffset = (2,0,3)):
     
         
         self.mortarNode = render.attachNewNode("mortar")
@@ -23,7 +23,7 @@ class Mortar():
         self.M = self.mortarNP
         self.M.reparentTo(self.mortarNode)
         self.M.setPythonTag("owner", self)
-        self.M.setPos(player.actor,2,0,3)
+        self.M.setPos(player.actor,manoffset[0],manoffset[1],manoffset[2])
         self.M.setHpr(player.actor,0,0,0)
         
         #Setup Collision
