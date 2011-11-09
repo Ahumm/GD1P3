@@ -10,15 +10,14 @@ import sys
 #Import our game stuff
 import game
 
-
 class Game:
     """Game Instance, contains the menus, world, etc."""
-    def __init__(self):
+    def __init__(self, game):
         self.state = None
         self.world = None
         self.cfont = loader.loadFont('Coalition_v2.ttf')
         self.add_menu()
-
+        
         
 
         
@@ -27,21 +26,25 @@ class Game:
         self.world = game.World()
     
     def exit_game(self):
-        self.remove_menu()
+        #self.remove_menu()
         sys.exit()
         
     def add_menu(self):
         self.start_button = DirectButton(text = "START", scale = .12, text_font = self.cfont, text_fg = ((0,0,0,1)), command = self.start_game, pos=(0, 0, 0.4))
         self.exit_button = DirectButton(text = ("EXIT"), scale = 0.12, text_font = self.cfont, command = self.exit_game, pos=(0, 0, 0))
-        
+        self.bar = DirectWaitBar(text = "", value = 0, range = 3000, pos = (0,-.9,-.9), relief = DGG.SUNKEN, borderWidth = (.01,.01), barColor = (0,180,0,1))
+        self.bar.setSz(.5)
+            
     def remove_menu(self):
         if self.start_button:
+            self.bar.finish(3000) 
             self.start_button.removeNode()
+            self.bar.removeNode()
         if self.exit_button:
             self.exit_button.removeNode()
         
     
 # Create game instance
-the_game = Game()
+the_game = Game(game)
 # Run
 run()

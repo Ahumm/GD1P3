@@ -131,6 +131,7 @@ class Player(DirectObject):
         taskMgr.add(self.update_counters, "PlayerUpdate", extraArgs=[game])
         
     def take_damage(self, damage):
+        
         self.health -= damage
         if self.health <= 0:
             self.die()
@@ -144,7 +145,8 @@ class Player(DirectObject):
             for i in range(self.cHandler.getNumEntries()):
                 entry = self.cHandler.getEntry(i)
                 if entry.getIntoNode().getName() == "ball":
-                    print "damage"
+                    game.hit.setVolume(0.6)
+                    game.hit.play()
                     self.take_damage(10)
         return Task.cont
                 
@@ -160,6 +162,8 @@ class Player(DirectObject):
                         self.smg_mag -= self.smg_burst_count
                         self.smg_fire_counter += self.smg_fire_rate
                         self.smg_can_fire = False
+                        game.smg_fire.setVolume(0.8)
+                        game.smg_fire.play()
                         b1 = bullets.Bullet(self, game)
                         b2 = bullets.Bullet(self, game)
                         b3 = bullets.Bullet(self, game)
@@ -174,6 +178,8 @@ class Player(DirectObject):
                         self.shotgun_mag -= 1
                         self.shotgun_fire_counter += self.shotgun_fire_rate
                         self.shotgun_can_fire = False
+                        game.shotgun_fire.setVolume(0.6)
+                        game.shotgun_fire.play()
                         b1 = bullets.Bullet(self,game, True)
                         b2 = bullets.Bullet(self,game, True)
                         b3 = bullets.Bullet(self, game,True)
@@ -187,6 +193,8 @@ class Player(DirectObject):
                         print "Shotgun reloading"
             elif self.selected_weapon == "MORTAR":
                 if self.mortar_loaded:
+                    game.mortar_fire.setVolume(0.7)
+                    game.mortar_fire.play()
                     self.mortar_loaded = False
                     self.mortar_load_counter += self.mortar_load_time
                     m = mortar.Mortar(self, game)
@@ -206,6 +214,8 @@ class Player(DirectObject):
                     if self.smg_reload_counter == 0:
                         self.smg_mag = 30
                         self.smg_reloading = False
+                        game.smg_load.setVolume(0.7)
+                        game.smg_load.play()
                         self.smg_can_fire = True
                         print "SMG reloaded"
         
@@ -220,6 +230,8 @@ class Player(DirectObject):
                         self.shotgun_reload_counter -= 1
                     if self.shotgun_reload_counter == 0:
                         self.shotgun_mag = 8
+                        game.shotgun_load.setVolume(0.7)
+                        game.shotgun_load.play()
                         self.shotgun_reloading = False
                         self.shotgun_can_fire = True
                         print "Shotgun reloaded"
@@ -229,6 +241,8 @@ class Player(DirectObject):
                     if self.mortar_load_counter > 0:
                         self.mortar_load_counter -= 1
                     if self.mortar_load_counter == 0:
+                        game.mortar_load.setVolume(0.7)
+                        game.mortar_load.play()
                         self.mortar_loaded = True
                         print "Mortar loaded"
             
