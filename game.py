@@ -229,47 +229,34 @@ class World(DirectObject): #subclassing here is necessary to accept events
             self.exit_button.removeNode()
             
     def update(self, task):
-        #print "HEALTH: " + str(self.player.health)
         self.hud_weapon.setText("WEAPON: " + str(self.player.selected_weapon))
         if self.player.health <= 25:
             self.hud_health.setFg((180,0,0,1))
         else: 
             self.hud_health.setText("HEALTH: " + str(self.player.health))
         if self.player.selected_weapon == "SMG":
-            #print "WEAPON: " + str(self.player.selected_weapon)
             self.hud_ammo.setText("AMMO: " + str(self.player.smg_mag))
             if self.player.smg_mag == 0:
                 self.hud_ammo.setFg((180,0,0,1))
             else:
                 self.hud_ammo.setFg((180,180,180,1))
-            #print "SMG MAG: " + str(self.player.smg_mag)
-            #print "SMG RELOAD TIME: " + str(self.player.smg_reload_time)
         elif self.player.selected_weapon == "SHOTGUN":
             pass
-        #print "HEALTH: " + str(self.player.health)
         self.hud_weapon.setText("WEAPON: " + self.player.selected_weapon)
         if self.player.selected_weapon == "SMG":
-            #print "WEAPON: " + str(self.player.selected_weapon)
-            #print "SMG MAG: " + str(self.player.smg_mag)
-            #print "SMG RELOAD TIME: " + str(self.player.smg_reload_time)
             pass
-        elif self.player.selected_weapon == "Shotgun":
-            print "WEAPON: " + str(self.player.selected_weapon)
+        elif self.player.selected_weapon == "SHOTGUN":
             if self.player.shotgun_mag == 0:
                 self.hud_ammo.setFg((180,0,0,1))
             else:
                 self.hud_ammo.setFg((180,180,180,1))
             self.hud_ammo.setText("AMMO: " + str(self.player.shotgun_mag))
-            print "SHOTGUN MAG: " + str(self.player.shotgun_mag)
-            print "SHOTGUN RELOAD TIME: " + str(self.player.shotgun_reload_time)
         else:
-            print "WEAPON: " + str(self.player.selected_weapon)
             self.hud_ammo.setText("LOADED")
             if self.player.mortar_loaded == False:
                 self.hud_ammo.setFg((180,0,0,1))
             else:
                 self.hud_ammo.setFg((180,180,180,1))
-            print "MORTAR RELOAD TIME: " + str(self.player.mortar_load_time)
         if self.pause == True:
             print "PAUSED"
         return task.cont
