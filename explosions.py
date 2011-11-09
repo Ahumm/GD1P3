@@ -40,12 +40,12 @@ class Explosions_Manager(object):
     def Mortar_Explosion(self, position):
         self.explosion_1.setVolume(0.6)
         self.explosion_1.play()
-        Explosion(position, self.mexp_tex, 6)
+        Explosion(position, self.mexp_tex, 3)
         
     def Explosion(self, position):
         self.explosion_2.setVolume(0.6)
         self.explosion_2.play()
-        Explosion(position,self.exp_tex, 20)
+        Explosion(position,self.exp_tex, 14)
         
     def Small_Explosion(self, position):
         self.explosion_1.setVolume(0.6)

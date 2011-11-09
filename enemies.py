@@ -428,7 +428,7 @@ class Enemy3(object):
         self.pursue_start = False
         self.evade_start = False
         self.timer = 300
-        self.fire_rate = 180
+        self.fire_rate = 60
         
         # Collision stuff for bullets
         #self.cTrav = CollisionTraverser()
@@ -491,7 +491,7 @@ class Enemy3(object):
             self.evade_start = True
             self.AIbehaviors.flee(game.player.actor,30,10,0.5)
             
-        if self.distanceToTarget() <= 20:
+        if self.distanceToTarget() <= 14:
             self.pursue_start = False
         if self.distanceToTarget() > 100:
             self.evade_start = False
@@ -570,7 +570,7 @@ class Enemy3(object):
         h = math.fabs(h1 - h2) - 180
         
         # Firing angle and fire rate code
-        if math.fabs(h) < 15 and self.timer <= 0:
+        if math.fabs(h) < 20 and self.timer <= 0:
             ## Put firing code here
             b1 = bullets.Bullet(self,game,True,manoffset=(5,11,2))
             b2 = bullets.Bullet(self,game,True,manoffset=(5,11,2))
