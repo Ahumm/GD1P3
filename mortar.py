@@ -31,17 +31,17 @@ class Mortar():
         self.mortarTrav = CollisionTraverser()
         #self.mortarTrav.showCollisions(render)
         self.mortarHandler = CollisionHandlerQueue()
-        self.mortarSphere = CollisionSphere(0,0,0,2)
+        self.mortarSphere = CollisionSphere(0,0,0,5)
         self.mortarColNode = CollisionNode("mortar")
         self.mortarColNode.addSolid(self.mortarSphere)
         self.mortarColNode.setIntoCollideMask(BitMask32.allOff())
         self.mortarColNode.setFromCollideMask(BitMask32.bit(5))
         self.mortarColNodePath = self.M.attachNewNode(self.mortarColNode)
         self.mortarColNodePath.setName("mortar")
-        #self.mortarColNodePath.show()
+        self.mortarColNodePath.show()
         self.mortarTrav.addCollider(self.mortarColNodePath, self.mortarHandler)
         #messenger.toggleVerMose()
-        self.xSpeed = 30.0
+        self.xSpeed = 20.0
         self.zSpeed = 20.0
         self.zSpeeddec = 0.5
         self.deleteMe = 0
