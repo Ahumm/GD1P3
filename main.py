@@ -26,7 +26,7 @@ class Game:
         self.world = game.World()
     
     def exit_game(self):
-        self.remove_menu()
+        #self.remove_menu()
         sys.exit()
         
     def add_menu(self):
