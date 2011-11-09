@@ -25,10 +25,10 @@ class Player(DirectObject):
         self.mortar_loaded = True
         self.mortar_load_time = 240
         self.mortar_load_counter = 0
-        self.smg_mag = 30
+        self.smg_mag = 15
         self.smg_reload_time = 120
         self.smg_reload_counter = 0
-        self.smg_burst_count = 3
+        self.smg_burst_count = 1
         self.smg_fire_rate = 30
         self.smg_fire_counter = 0
         self.smg_reloading = False
@@ -165,13 +165,9 @@ class Player(DirectObject):
                         game.smg_fire.setVolume(0.8)
                         game.smg_fire.play()
                         b1 = bullets.Bullet(self, game)
-                        b2 = bullets.Bullet(self, game)
-                        b3 = bullets.Bullet(self, game)
-                        #print "SMG fired 3 rounds, "+str(self.smg_mag)+" rounds remaining"
                     if self.smg_mag == 0:
                         self.smg_reload_counter +=self.smg_reload_time
                         self.smg_reloading = True
-                        #print "SMG reloading"
             elif self.selected_weapon == "SHOTGUN":
                 if self.shotgun_can_fire:
                     if self.shotgun_mag > 0:
