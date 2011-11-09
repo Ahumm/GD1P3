@@ -178,8 +178,8 @@ class World(DirectObject): #subclassing here is necessary to accept events
         
     def pause(self):
         self.paused = True
-        self.resume_button = DirectButton(text = ("Resume"), scale = 0.25, command = self.resume_game, pos=(0, 0, 0.4))
-        self.exit_button = DirectButton(text = ("Exit"), scale = 0.25, command = self.exit_game, pos=(0, 0, 0))
+        self.resume_button = DirectButton(text = ("Resume"), scale = 0.2, text_font = self.cfont, command = self.resume_game, pos=(0, 0, 0.4))
+        self.exit_button = DirectButton(text = ("Exit"), scale = 0.2, text_font = self.cfont, command = self.exit_game, pos=(0, 0, 0))
     
     def setAI(self):
         """ Set up The AI world"""
