@@ -25,6 +25,10 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.setupLights()
         render.setShaderAuto() #you probably want to use this
         self.cfont = loader.loadFont('Coalition_v2.ttf')
+        self.wave_size = 3
+        self.max_enemies = 6
+        self.score = 0
+        self.wave = 1
         
         
         # Mapping some keys
@@ -114,12 +118,13 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.hud_ammo = OnscreenText(text = "AMMO: ", pos=(0.75, -0.9), scale=0.07, font = self.cfont, fg=(180,180,180,1), shadow=(0,0,0,1))
         # Set the enemy spawn points and frequenct of spawns
         self.wavetimer = 30
-        self.spawnlocs = [(30,30,0),( 30,-30,0),(-30,30,0),(-30,-30,0),
-                          (30, 0,0),(-30,  0,0),(  0,30,0),(  0,-30,0)]
+        self.spawnlocs = [(-1,-30,0),(3,30,0),(-13,2,0),(13,0,0)]#
         
         self.spawnTask = taskMgr.doMethodLater(2,self.spawnEnemies,'spawnTask')
         
         #self.explosions_handler = explosions.Explosions_Manager()
+        self.explosions_handler = explosions.Explosions_Manager()
+        
         taskMgr.add(self.update, "update")
         taskMgr.add(self.player_shoot, "Shoot")
         
@@ -188,9 +193,9 @@ class World(DirectObject): #subclassing here is necessary to accept events
         print "Spawning Wave!"
         task.delayTime = self.wavetimer
         if not self.paused:
-            for i in range(5):
-                if len(self.enemies) < 11:
-                    self.newEnemy = enemies.Enemy1(self,random.choice(self.spawnlocs))    
+            if len(self.enemies) + self.wave_size <= self.max_enemies:
+                for i in range(self.wave_size):
+                    self.newEnemy = enemies.Enemy1(self,random.choice(self.spawnlocs),"Enemy-%d-%d"%(self.wave,i))    
                     self.enemies.append(self.newEnemy)
                     self.AIworld.addAiChar(self.newEnemy.setupAI(self.player.actor))
         return task.again
@@ -200,7 +205,12 @@ class World(DirectObject): #subclassing here is necessary to accept events
         if not self.paused:
             self.AIworld.update()
             for e in self.enemies:
-                e.updateHeight(self)
+                if e.health <= 0:
+                    e.die()
+                    self.AIworld.removeAiChar(e.name)
+                    self.enemies.remove(e)
+                else:
+                    e.updateHeight(self)
         return Task.cont
     
     def resume_game(self):
@@ -235,6 +245,14 @@ class World(DirectObject): #subclassing here is necessary to accept events
             print "SMG MAG: " + str(self.player.smg_mag)
             print "SMG RELOAD TIME: " + str(self.player.smg_reload_time)
         elif self.player.selected_weapon == "SHOTGUN":
+        #print "HEALTH: " + str(self.player.health)
+        self.hud_weapon.setText("WEAPON: " + self.player.selected_weapon)
+        if self.player.selected_weapon == "SMG":
+            #print "WEAPON: " + str(self.player.selected_weapon)
+            #print "SMG MAG: " + str(self.player.smg_mag)
+            #print "SMG RELOAD TIME: " + str(self.player.smg_reload_time)
+            pass
+        elif self.player.selected_weapon == "Shotgun":
             print "WEAPON: " + str(self.player.selected_weapon)
             if self.player.shotgun_mag == 0:
                 self.hud_ammo.setFg((180,0,0,1))
