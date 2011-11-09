@@ -19,7 +19,6 @@ class Game:
         self.cfont = loader.loadFont('Coalition_v2.ttf')
         self.add_menu()
         
-        
 
         
     def start_game(self):
@@ -53,3 +52,4 @@ class Game:
 the_game = Game(game)
 # Run
 run()
+

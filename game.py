@@ -281,5 +281,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
                 self.hud_ammo.setFg((180,180,180,1))
         if self.pause == True:
             print "PAUSED"
+        if self.player.health <=0:
+            self.game_end = True
         return task.cont
             
