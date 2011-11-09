@@ -60,20 +60,24 @@ class Mortar():
             
     def traverseAll(self, game):
         if not game.paused:
+            if self.deleteMe == 1:
+                self.destroyMe(game)
+                return Task.done
             self.mortarTrav.traverse(render)
         return Task.cont
         
     def move(self, game):
         if not game.paused:
             if self.destroy:
-                self.destroyMe(game)
+                self.deleteMe = 1
                 return Task.done
             else:
                 self.M.setX(self.M, self.xSpeed * globalClock.getDt())
                 self.M.setZ(self.M, self.zSpeed * globalClock.getDt())
                 self.zSpeed -= self.zSpeeddec
                 if self.zSpeed < 0:
-                    self.M.setP(-180)
+                    pass
+                    #self.M.setP(-180)
                 self.m_entries = []
                 for i in range(self.mortarHandler.getNumEntries()):
                     entry = self.mortarHandler.getEntry(i)

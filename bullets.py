@@ -13,7 +13,7 @@ import sys, math, random
 #temporary - variables need to be changed
 
 class Bullet():
-    def __init__(self, parent, game, shotgun = False, manoffset = (7,0,0),seed=None):
+    def __init__(self, parent, game, shotgun = False, manoffset = (11,0,0),seed=None):
         random.seed(seed)
         self.parent = parent
         self.bulletNode = render.attachNewNode("bullet")
