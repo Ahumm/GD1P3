@@ -38,7 +38,7 @@ class Mortar():
         self.mortarColNode.setFromCollideMask(BitMask32.bit(5))
         self.mortarColNodePath = self.M.attachNewNode(self.mortarColNode)
         self.mortarColNodePath.setName("mortar")
-        self.mortarColNodePath.show()
+        #self.mortarColNodePath.show()
         self.mortarTrav.addCollider(self.mortarColNodePath, self.mortarHandler)
         #messenger.toggleVerMose()
         self.xSpeed = 20.0
