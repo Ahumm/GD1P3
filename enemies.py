@@ -165,7 +165,7 @@ class Enemy1(object):
             
         if self.health <= 0:
             game.score += self.value
-            game.explosions_handler.Mortar_Explosion(self.actor.getPos())
+            game.explosions_handler.Small_Explosion(self.actor.getPos())
             #self.die()
         
     #AI Controls
