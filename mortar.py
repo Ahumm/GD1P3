@@ -62,6 +62,9 @@ class Mortar():
         
     def move(self, game):
         if not game.paused:
+            if self.destroy:
+                self.destroy = True
+                return Task.done
             self.M.setX(self.M, self.xSpeed * globalClock.getDt())
             self.M.setZ(self.M, self.zSpeed * globalClock.getDt())
             self.zSpeed -= self.zSpeeddec
@@ -71,8 +74,8 @@ class Mortar():
                 if entry.getIntoNode().getName() == "fence_c" or entry.getIntoNode().getName() =="terrain" or entry.getIntoNode().getName() =="debris" or entry.getIntoNode().getName() =="Enemy":
                     self.m_entries.append(entry)
             if len(self.m_entries) > 0:
-                self.destroyMe(game)
-                return Task.done
+                self.mortarSphere.setRadius(10)
+
         return Task.cont
 
 
