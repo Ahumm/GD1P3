@@ -14,16 +14,19 @@ import sys, math, random
 #temporary - variaMles need to Me changed
 
 class Mortar():
-    def __init__(self, player, game):
+    def __init__(self, player, game,manoffset = (3,0,8)):
     
         
         self.mortarNode = render.attachNewNode("mortar")
-        self.mortarNP = loader.loadModel("models/ball")
-        self.mortarNP.setScale(.5)
+        self.mortarNode.setName("mortar")
+        self.mortarNP = loader.loadModel("models/mortar")
+        self.mortarNP.setName("mortar")
+        self.mortarNP.setScale(.1)
         self.M = self.mortarNP
+        self.M.setName("mortar")
         self.M.reparentTo(self.mortarNode)
         self.M.setPythonTag("owner", self)
-        self.M.setPos(player.actor,2,0,3)
+        self.M.setPos(player.actor,manoffset[0],manoffset[1],manoffset[2])
         self.M.setHpr(player.actor,0,0,0)
         
         #Setup Collision
@@ -46,7 +49,7 @@ class Mortar():
         self.zSpeeddec = 0.5
         self.deleteMe = 0
         self.damage = 12
-        self.destroyed = False
+        self.destroy = False
         #tmaxLife is created var, we need it so mortars dont go on forever
 
         
@@ -57,22 +60,34 @@ class Mortar():
             
     def traverseAll(self, game):
         if not game.paused:
+            if self.deleteMe == 1:
+                self.destroyMe(game)
+                return Task.done
             self.mortarTrav.traverse(render)
         return Task.cont
         
     def move(self, game):
         if not game.paused:
-            self.M.setX(self.M, self.xSpeed * globalClock.getDt())
-            self.M.setZ(self.M, self.zSpeed * globalClock.getDt())
-            self.zSpeed -= self.zSpeeddec
-            self.m_entries = []
-            for i in range(self.mortarHandler.getNumEntries()):
-                entry = self.mortarHandler.getEntry(i)
-                if entry.getIntoNode().getName() == "fence_c" or entry.getIntoNode().getName() =="terrain" or entry.getIntoNode().getName() =="debris" or entry.getIntoNode().getName() =="Enemy":
-                    self.m_entries.append(entry)
-            if len(self.m_entries) > 0:
-                self.destroyMe(game)
+            if self.destroy:
+                self.deleteMe = 1
                 return Task.done
+            else:
+                self.M.setX(self.M, self.xSpeed * globalClock.getDt())
+                self.M.setZ(self.M, self.zSpeed * globalClock.getDt())
+                self.zSpeed -= self.zSpeeddec
+                if self.zSpeed < 0:
+                    pass
+                    #self.M.setP(-180)
+                self.m_entries = []
+                for i in range(self.mortarHandler.getNumEntries()):
+                    entry = self.mortarHandler.getEntry(i)
+                    if entry.getIntoNode().getName() == "fence_c" or entry.getIntoNode().getName() =="terrain" or entry.getIntoNode().getName() =="debris" or entry.getIntoNode().getName() =="Enemy":
+                        self.m_entries.append(entry)
+                if len(self.m_entries) > 0:
+                    self.mortarSphere.setRadius(20)
+                    print self.mortarColNode.getName()
+                    self.destroy = True
+
         return Task.cont
 
 
@@ -80,6 +95,5 @@ class Mortar():
         game.explosions_handler.Mortar_Explosion(self.M.getPos())
         self.mortarNP.clearPythonTag("owner")
         self.mortarNode.removeNode()
-        self.destroyed = True 
         del self
         

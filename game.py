@@ -28,7 +28,15 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.wave_size = 3
         self.max_enemies = 6
         self.score = 0
-        self.wave = 1
+        self.wave = 0
+        self.background_music = loader.loadSfx("sounds/bgm.wav")
+        self.shotgun_fire = loader.loadSfx("sounds/shotgun_fire.wav")
+        self.smg_fire = loader.loadSfx("sounds/smg_fire.wav")
+        self.mortar_fire = loader.loadSfx("sounds/mortar_fire.wav")
+        self.explosion_1 = loader.loadSfx("sounds/explosion_1.wav")
+        self.explosion_2 = loader.loadSfx("sounds/explosion_2.wav")
+        self.hit = loader.loadSfx("sounds/bullet_hit.wav")
+        self.background_music.setLoop(True)
         
         
         # Mapping some keys
@@ -111,11 +119,14 @@ class World(DirectObject): #subclassing here is necessary to accept events
    
         self.paused = False
         self.setAI()
+
         
         
         self.hud_weapon = OnscreenText(text = "WEAPON: "+ str(self.player.selected_weapon), pos = (0.75, -0.8), scale = 0.07, font = self.cfont, fg=(180,180,180,1), shadow = (0,0,0,1))
         self.hud_health = OnscreenText(text = "HEALTH: "+ str(self.player.health), pos= (-0.9, -0.8), scale = 0.07, font = self.cfont, fg=(180,180,180,1), shadow=(0,0,0,1)) 
         self.hud_ammo = OnscreenText(text = "AMMO: ", pos=(0.75, -0.9), scale=0.07, font = self.cfont, fg=(180,180,180,1), shadow=(0,0,0,1))
+        self.hud_wave = OnscreenText(text = "WAVE: "+str(self.wave), pos= (-0.9, -0.9), scale = 0.07, font = self.cfont, fg=(180,180,180,1), shadow=(0,0,0,1))
+        self.hud_score = OnscreenText(text = "SCORE: "+str(self.score),pos= (0, -0.9), scale = 0.07, font = self.cfont, fg=(180,180,180,1), shadow=(0,0,0,1))
         # Set the enemy spawn points and frequenct of spawns
         self.wavetimer = 30
         self.spawnlocs = [(-1,-30,0),(3,30,0),(-13,2,0),(13,0,0)]#
@@ -127,7 +138,8 @@ class World(DirectObject): #subclassing here is necessary to accept events
         
         taskMgr.add(self.update, "update")
         taskMgr.add(self.player_shoot, "Shoot")
-        
+        self.background_music.setVolume(0.4)
+        self.background_music.play()
         
     def create_explosion(self):
         self.explosions_handler.Small_Explosion(VBase3(0,0,3))
@@ -196,7 +208,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
             if len(self.enemies) + self.wave_size <= self.max_enemies:
                 self.wave += 1
                 for i in range(self.wave_size):
-                    self.newEnemy = enemies.Enemy1(self,random.choice(self.spawnlocs),"Enemy-%d-%d"%(self.wave,i))    
+                    self.newEnemy = enemies.Enemy3(self,random.choice(self.spawnlocs),"Enemy-%d-%d"%(self.wave,i))    
                     self.enemies.append(self.newEnemy)
                     self.AIworld.addAiChar(self.newEnemy.setupAI(self.player.actor))
         return task.again
@@ -231,6 +243,8 @@ class World(DirectObject): #subclassing here is necessary to accept events
     def update(self, task):
         self.hud_health.setText("HEALTH: " + str(self.player.health))
         self.hud_weapon.setText("WEAPON: " + str(self.player.selected_weapon))
+        self.hud_wave.setText("WAVE: " + str(self.wave))
+        self.hud_score.setText("SCORE: " + str(self.score))
         if self.player.health <= 25:
             self.hud_health.setFg((180,0,0,1))
         else: 

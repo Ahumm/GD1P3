@@ -69,7 +69,7 @@ class Player(DirectObject):
         self.cNode = CollisionNode("Player")
         self.cNode.addSolid(self.cSphere)
         self.cNodePath = self.actor.attachNewNode(self.cNode)
-        #self.cNodePath.show()
+        self.cNodePath.show()
         self.cTrav.addCollider(self.cNodePath, self.cHandler)
         
         
@@ -124,6 +124,8 @@ class Player(DirectObject):
         # Hover Task
         taskMgr.add(self.hover, "PlayerHover", extraArgs=[game])
         
+        # Hit Task
+        taskMgr.add(self.hit_check, "PlayerHit", extraArgs=[game])
         
         # Add Logic Update Task
         taskMgr.add(self.update_counters, "PlayerUpdate", extraArgs=[game])
@@ -141,7 +143,8 @@ class Player(DirectObject):
         if not game.paused:
             for i in range(self.cHandler.getNumEntries()):
                 entry = self.cHandler.getEntry(i)
-                if entry.getFromNode().getName == "bullet":
+                if entry.getIntoNode().getName() == "ball":
+                    print "damage"
                     self.take_damage(10)
         return Task.cont
                 
@@ -157,6 +160,8 @@ class Player(DirectObject):
                         self.smg_mag -= self.smg_burst_count
                         self.smg_fire_counter += self.smg_fire_rate
                         self.smg_can_fire = False
+                        game.smg_fire.setVolume(0.8)
+                        game.smg_fire.play()
                         b1 = bullets.Bullet(self, game)
                         b2 = bullets.Bullet(self, game)
                         b3 = bullets.Bullet(self, game)
@@ -171,6 +176,8 @@ class Player(DirectObject):
                         self.shotgun_mag -= 1
                         self.shotgun_fire_counter += self.shotgun_fire_rate
                         self.shotgun_can_fire = False
+                        game.shotgun_fire.setVolume(0.6)
+                        game.shotgun_fire.play()
                         b1 = bullets.Bullet(self,game, True)
                         b2 = bullets.Bullet(self,game, True)
                         b3 = bullets.Bullet(self, game,True)
@@ -184,6 +191,8 @@ class Player(DirectObject):
                         print "Shotgun reloading"
             elif self.selected_weapon == "MORTAR":
                 if self.mortar_loaded:
+                    game.mortar_fire.setVolume(0.7)
+                    game.mortar_fire.play()
                     self.mortar_loaded = False
                     self.mortar_load_counter += self.mortar_load_time
                     m = mortar.Mortar(self, game)
