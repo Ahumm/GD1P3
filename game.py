@@ -48,6 +48,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.accept("space", self.setKey, ["shoot", 1])
         self.accept("space-up",self.setKey, ["shoot", 0])
         self.accept("e", self.create_explosion)
+        self.accept("r", self.reload)
         self.accept("l", self.toggle_light)
         self.accept("1", self.setSMG)
         self.accept("2", self.setShotgun)
@@ -160,6 +161,9 @@ class World(DirectObject): #subclassing here is necessary to accept events
     def setMortar(self):
         self.player.set_weapon("MORTAR")
         
+    def reload(self):
+        self.player.reload(self)
+        
         
     def toggle_light(self):
         self.player.toggle_light()
@@ -190,8 +194,8 @@ class World(DirectObject): #subclassing here is necessary to accept events
         self.fillLight.setColor((.4,.4,.4, 1))
         self.fillLightNP = render.attachNewNode(self.fillLight)
         self.fillLightNP.setHpr(30, 0, 0)
-        render.setLight(self.fillLightNP)    """
-        
+        render.setLight(self.fillLightNP)    
+        """
     def pause(self):
         if not self.paused:
             self.paused = True
@@ -215,11 +219,11 @@ class World(DirectObject): #subclassing here is necessary to accept events
                 self.wave += 1
                 random.seed()
                 for i in range(self.wave_size):
-                    x = math.floor(random.uniform(0,3))
+                    x = math.floor(random.uniform(0,6))
                     if x < 1:
-                        self.newEnemy = enemies.Enemy1(self,random.choice(self.spawnlocs),"Enemy-%d-%d"%(self.wave,i))   
-                    elif x < 2:
-                        self.newEnemy = enemies.Enemy2(self,random.choice(self.spawnlocs),"Enemy-%d-%d"%(self.wave,i))    
+                        self.newEnemy = enemies.Enemy2(self,random.choice(self.spawnlocs),"Enemy-%d-%d"%(self.wave,i))   
+                    elif x < 4:
+                        self.newEnemy = enemies.Enemy1(self,random.choice(self.spawnlocs),"Enemy-%d-%d"%(self.wave,i))    
                     else:
                         self.newEnemy = enemies.Enemy3(self,random.choice(self.spawnlocs),"Enemy-%d-%d"%(self.wave,i))    
                     self.enemies.append(self.newEnemy)
@@ -269,13 +273,13 @@ class World(DirectObject): #subclassing here is necessary to accept events
             self.hud_health.setFg((180,180,180,1))
         if self.player.selected_weapon == "SMG":
             self.hud_ammo.setText("AMMO: " + str(self.player.smg_mag))
-            if self.player.smg_mag == 0:
+            if self.player.smg_mag == 0 or self.player.smg_reloading:
                 self.hud_ammo.setFg((180,0,0,1))
             else:
                 self.hud_ammo.setFg((180,180,180,1))
         elif self.player.selected_weapon == "SHOTGUN":
             self.hud_weapon.setText("WEAPON: " + self.player.selected_weapon)
-            if self.player.shotgun_mag == 0:
+            if self.player.shotgun_mag == 0 or self.player.shotgun_reloading:
                 self.hud_ammo.setFg((180,0,0,1))
             else:
                 self.hud_ammo.setFg((180,180,180,1))

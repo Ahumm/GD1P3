@@ -6,12 +6,7 @@ from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
 from direct.gui.DirectGui import * #for buttons and stuff
 from direct.gui.OnscreenText import OnscreenText
-import sys
-import bullets
-import mortar
-import time
-
-
+import sys, bullets, mortar, time
 
 class Player(DirectObject):
     def __init__(self, game):
@@ -64,7 +59,6 @@ class Player(DirectObject):
         camera.setPosHpr(20,10,4,0,0,0)
         self.last_shot_fired = 0.0
         self.dt = globalClock.getDt()
-        #camera.lookAt(self.actor)
         
         # Collision for bullets
         self.cTrav = CollisionTraverser()
@@ -73,11 +67,9 @@ class Player(DirectObject):
         self.cNode = CollisionNode("Player")
         self.cNode.addSolid(self.cSphere)
         self.cNodePath = self.actor.attachNewNode(self.cNode)
-        #self.cNodePath.show()
+
         self.cTrav.addCollider(self.cNodePath, self.cHandler)
-        
-        
-        # Set Default Weapon
+
         self.selected_weapon = "SMG"
         
         # Add headlights
@@ -116,8 +108,6 @@ class Player(DirectObject):
         render.setLight(self.left_hover_node)
         render.setLight(self.right_hover_node)
 
-        
-        
         # Add Movement Task
         taskMgr.add(self.move, "PlayerMove", extraArgs= [game])
         
@@ -145,7 +135,6 @@ class Player(DirectObject):
     def set_weapon(self, weapon):
         self.selected_weapon = weapon
         
-        
     def hit_check(self, game):
         if not game.paused:
             for i in range(self.cHandler.getNumEntries()):
@@ -157,9 +146,7 @@ class Player(DirectObject):
         return Task.cont
                 
 
-    
 
-        
     def fire(self, game):
         if not game.paused:
             if self.selected_weapon == "SMG":
@@ -201,6 +188,19 @@ class Player(DirectObject):
                     self.mortar_load_counter += self.mortar_load_time
                     m = mortar.Mortar(self, game)
                     #print "Mortar launched"
+                    
+    def reload(self, game):
+        if not game.paused:
+            if self.selected_weapon == "SMG":
+                if not self.smg_reloading and self.smg_mag < 15:
+                    self.smg_can_fire = False
+                    self.smg_reloading = True
+                    self.smg_reload_counter += self.smg_reload_time
+            elif self.selected_weapon == "SHOTGUN":
+                if not self.shotgun_reloading and self.shotgun_mag < 8:
+                    self.shotgun_can_fire = False
+                    self.shotgun_reloading = True
+                    self.shotgun_reload_counter += self.shotgun_reload_time
     
     def update_counters(self, game):
         if not game.paused:
@@ -393,7 +393,7 @@ class Player(DirectObject):
     def die(self, game):
         game.paused = True
         if not self.continue_on_screen:
-            self.you_lose = OnscreenText(text = "CONTINUE?", pos = (0, 0), scale = 0.08, font = self.cfont, fg=(180,180,180,1), shadow = (0,0,0,1))
+            self.you_lose = OnscreenText(text = "CONTINUE?", pos = (0, 0), scale = 0.16, font = self.cfont, fg=(180,180,180,1), shadow = (0,0,0,1))
             self.restart_button = DirectButton(text = "CONTINUE", scale = .12, text_font = self.cfont, text_fg = ((0,0,0,1)), command = self.restart_game, extraArgs=[game],pos=(0, 0, 0.5))
             self.exit_button = DirectButton(text = "EXIT", scale = 0.12, text_font = self.cfont, command = self.exit_game, pos=(0, 0, -0.5))
             self.continue_on_screen = True
