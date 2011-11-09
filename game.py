@@ -111,11 +111,14 @@ class World(DirectObject): #subclassing here is necessary to accept events
    
         self.paused = False
         self.setAI()
+
         
         
         self.hud_weapon = OnscreenText(text = "WEAPON: "+ str(self.player.selected_weapon), pos = (0.75, -0.8), scale = 0.07, font = self.cfont, fg=(180,180,180,1), shadow = (0,0,0,1))
         self.hud_health = OnscreenText(text = "HEALTH: "+ str(self.player.health), pos= (-0.9, -0.8), scale = 0.07, font = self.cfont, fg=(180,180,180,1), shadow=(0,0,0,1)) 
         self.hud_ammo = OnscreenText(text = "AMMO: ", pos=(0.75, -0.9), scale=0.07, font = self.cfont, fg=(180,180,180,1), shadow=(0,0,0,1))
+        self.hud_wave = OnscreenText(text = "WAVE: "+str(self.wave), pos= (-0.9, -0.9), scale = 0.07, font = self.cfont, fg=(180,180,180,1), shadow=(0,0,0,1))
+        self.hud_score = OnscreenText(text = "SCORE: "+str(self.score),pos= (0, -0.9), scale = 0.07, font = self.cfont, fg=(180,180,180,1), shadow=(0,0,0,1))
         # Set the enemy spawn points and frequenct of spawns
         self.wavetimer = 30
         self.spawnlocs = [(-1,-30,0),(3,30,0),(-13,2,0),(13,0,0)]#
@@ -231,6 +234,8 @@ class World(DirectObject): #subclassing here is necessary to accept events
     def update(self, task):
         self.hud_health.setText("HEALTH: " + str(self.player.health))
         self.hud_weapon.setText("WEAPON: " + str(self.player.selected_weapon))
+        self.hud_wave.setText("WAVE: " + str(self.wave))
+        self.hud_score.setText("SCORE: " + str(self.score))
         if self.player.health <= 25:
             self.hud_health.setFg((180,0,0,1))
         else: 
