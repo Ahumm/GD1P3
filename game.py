@@ -194,6 +194,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         task.delayTime = self.wavetimer
         if not self.paused:
             if len(self.enemies) + self.wave_size <= self.max_enemies:
+                self.wave += 1
                 for i in range(self.wave_size):
                     self.newEnemy = enemies.Enemy1(self,random.choice(self.spawnlocs),"Enemy-%d-%d"%(self.wave,i))    
                     self.enemies.append(self.newEnemy)
