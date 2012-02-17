@@ -24,7 +24,7 @@ class World(DirectObject): #subclassing here is necessary to accept events
         #self.update()
         self.setupLights()
         render.setShaderAuto() #you probably want to use this
-        self.cfont = loader.loadFont('Coalition_v2.ttf')
+        ##self.cfont = loader.loadFont('Coalition_v2.ttf')
         self.wave_size = 3
         self.max_enemies = 6
         self.score = 0
@@ -126,11 +126,11 @@ class World(DirectObject): #subclassing here is necessary to accept events
 
         
         
-        self.hud_weapon = OnscreenText(text = "WEAPON: "+ str(self.player.selected_weapon), pos = (0.75, -0.8), scale = 0.07, font = self.cfont, fg=(180,180,180,1), shadow = (0,0,0,1))
-        self.hud_health = OnscreenText(text = "HEALTH: "+ str(self.player.health), pos= (-0.9, -0.8), scale = 0.07, font = self.cfont, fg=(180,180,180,1), shadow=(0,0,0,1)) 
-        self.hud_ammo = OnscreenText(text = "AMMO: ", pos=(0.75, -0.9), scale=0.07, font = self.cfont, fg=(180,180,180,1), shadow=(0,0,0,1))
-        self.hud_wave = OnscreenText(text = "WAVE: "+str(self.wave), pos= (-0.9, -0.9), scale = 0.07, font = self.cfont, fg=(180,180,180,1), shadow=(0,0,0,1))
-        self.hud_score = OnscreenText(text = "SCORE: "+str(self.score),pos= (0, -0.9), scale = 0.07, font = self.cfont, fg=(180,180,180,1), shadow=(0,0,0,1))
+        self.hud_weapon = OnscreenText(text = "WEAPON: "+ str(self.player.selected_weapon), pos = (0.75, -0.8), scale = 0.07, fg=(180,180,180,1), shadow = (0,0,0,1))
+        self.hud_health = OnscreenText(text = "HEALTH: "+ str(self.player.health), pos= (-0.9, -0.8), scale = 0.07, fg=(180,180,180,1), shadow=(0,0,0,1)) 
+        self.hud_ammo = OnscreenText(text = "AMMO: ", pos=(0.75, -0.9), scale=0.07, fg=(180,180,180,1), shadow=(0,0,0,1))
+        self.hud_wave = OnscreenText(text = "WAVE: "+str(self.wave), pos= (-0.9, -0.9), scale = 0.07, fg=(180,180,180,1), shadow=(0,0,0,1))
+        self.hud_score = OnscreenText(text = "SCORE: "+str(self.score),pos= (0, -0.9), scale = 0.07, fg=(180,180,180,1), shadow=(0,0,0,1))
         
         # Set the enemy spawn points and frequenct of spawns
         self.wavetimer = 30
@@ -199,9 +199,9 @@ class World(DirectObject): #subclassing here is necessary to accept events
     def pause(self):
         if not self.paused:
             self.paused = True
-            self.pause_text = OnscreenText(text = "PAUSED", pos = (0, 0.5), scale = 0.1, font = self.cfont, fg=(180,180,180,1), shadow = (0,0,0,1))
-            self.resume_button = DirectButton(text = ("RESUME"), scale = 0.2, text_font = self.cfont, command = self.resume_game, pos=(0, 0, 0.0))
-            self.exit_button = DirectButton(text = ("EXIT"), scale = 0.2, text_font = self.cfont, command = self.exit_game, pos=(0, 0,-0.4))
+            self.pause_text = OnscreenText(text = "PAUSED", pos = (0, 0.5), scale = 0.1, fg=(180,180,180,1), shadow = (0,0,0,1))
+            self.resume_button = DirectButton(text = ("RESUME"), scale = 0.2, command = self.resume_game, pos=(0, 0, 0.0))
+            self.exit_button = DirectButton(text = ("EXIT"), scale = 0.2, command = self.exit_game, pos=(0, 0,-0.4))
     
     def setAI(self):
         """ Set up The AI world"""

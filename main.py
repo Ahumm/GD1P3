@@ -16,7 +16,7 @@ class Game:
     def __init__(self, game):
         self.state = None
         self.world = None
-        self.cfont = loader.loadFont('Coalition_v2.ttf')
+        ##self.cfont = loader.loadFont('Coalition_v2.ttf')
         self.add_menu()
         
 
@@ -31,8 +31,8 @@ class Game:
         
     def add_menu(self):
         self.bg = OnscreenImage(image = "textures/Title_Screen_Final.png", pos=(0,0,0), scale=(1.35,1,1))
-        self.start_button = DirectButton(text = "START", scale = .12, text_font = self.cfont, text_fg = ((0,0,0,1)), command = self.start_game, pos=(0, 0, 0.4))
-        self.exit_button = DirectButton(text = ("EXIT"), scale = 0.12, text_font = self.cfont, command = self.exit_game, pos=(0, 0, 0))
+        self.start_button = DirectButton(text = "START", scale = .12, text_fg = ((0,0,0,1)), command = self.start_game, pos=(0, 0, 0.4))
+        self.exit_button = DirectButton(text = ("EXIT"), scale = 0.12, command = self.exit_game, pos=(0, 0, 0))
         self.bar = DirectWaitBar(text = "", value = 0, range = 10000, pos = (0,-.9,-.9), relief = DGG.SUNKEN, borderWidth = (.01,.01), barColor = (0,180,0,1))
         self.bar.setSz(0.5)
             

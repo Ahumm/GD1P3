@@ -13,7 +13,7 @@ class Player(DirectObject):
         # Set ALL the variables!
         self.continue_on_screen = False
         self.health = 100
-        self.cfont = loader.loadFont('Coalition_v2.ttf')
+        ##self.cfont = loader.loadFont('Coalition_v2.ttf')
         self.shotgun_mag = 8
         self.shotgun_can_fire = True
         self.shotgun_fire_rate = 20
@@ -393,9 +393,9 @@ class Player(DirectObject):
     def die(self, game):
         game.paused = True
         if not self.continue_on_screen:
-            self.you_lose = OnscreenText(text = "CONTINUE?", pos = (0, 0), scale = 0.16, font = self.cfont, fg=(180,180,180,1), shadow = (0,0,0,1))
-            self.restart_button = DirectButton(text = "CONTINUE", scale = .12, text_font = self.cfont, text_fg = ((0,0,0,1)), command = self.restart_game, extraArgs=[game],pos=(0, 0, 0.5))
-            self.exit_button = DirectButton(text = "EXIT", scale = 0.12, text_font = self.cfont, command = self.exit_game, pos=(0, 0, -0.5))
+            self.you_lose = OnscreenText(text = "CONTINUE?", pos = (0, 0), scale = 0.16, fg=(180,180,180,1), shadow = (0,0,0,1))
+            self.restart_button = DirectButton(text = "CONTINUE", scale = .12, text_fg = ((0,0,0,1)), command = self.restart_game, extraArgs=[game],pos=(0, 0, 0.5))
+            self.exit_button = DirectButton(text = "EXIT", scale = 0.12, command = self.exit_game, pos=(0, 0, -0.5))
             self.continue_on_screen = True
         
     def remove_menu(self):
